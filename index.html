@@ -3,257 +3,132 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ACES ALLEY // TACTICAL AIR OS V5.0</title>
+<title>ACES ALLEY // TACTICAL AIR OS V5.2</title>
 <style>
   :root {
-    --bg: #090e15;
-    --panel: #111a24;
-    --border: #22374d;
-    --text: #cbd5e1;
-    --text-dim: #677d93;
-    --cyan: #38bdf8;
-    --blue: #1d4ed8;
-    --green: #2ecc71;
-    --amber: #f59e0b;
-    --red: #ef4444;
-    --purple: #c084fc;
-    --gold: #f1c40f;
+    --bg: #090e15; --panel: #111a24; --border: #22374d; --text: #cbd5e1;
+    --text-dim: #677d93; --cyan: #38bdf8; --blue: #1d4ed8; --green: #2ecc71;
+    --amber: #f59e0b; --red: #ef4444; --purple: #c084fc; --gold: #f1c40f;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    background-color: var(--bg);
-    color: var(--text);
-    font-family: "Courier New", Courier, monospace;
-    font-size: 13px;
-    line-height: 1.4;
-    padding: 10px;
-    display: flex;
-    justify-content: center;
-    overflow-x: hidden;
+    background-color: var(--bg); color: var(--text);
+    font-family: "Courier New", Courier, monospace; font-size: 13px; line-height: 1.4;
+    padding: 10px; display: flex; justify-content: center; overflow-x: hidden;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220'%3E%3Cpolygon points='0,0 90,0 45,90' fill='%2313202e'/%3E%3Cpolygon points='90,0 220,0 150,70' fill='%231d334a'/%3E%3Cpolygon points='150,70 220,0 220,130' fill='%23325173'/%3E%3Cpolygon points='45,90 150,70 110,180' fill='%230b131c'/%3E%3Cpolygon points='0,0 45,90 0,180' fill='%231d334a'/%3E%3Cpolygon points='0,180 110,180 70,220 0,220' fill='%2313202e'/%3E%3Cpolygon points='110,180 220,130 220,220 70,220' fill='%231d334a'/%3E%3Cpolygon points='150,70 220,130 110,180' fill='%2341688f'/%3E%3C/svg%3E");
-    background-attachment: fixed;
-    background-size: 220px 220px;
+    background-attachment: fixed; background-size: 220px 220px;
   }
   #terminal {
-    width: 100%;
-    max-width: 860px;
-    background: var(--panel);
-    border: 2px solid var(--border);
-    border-radius: 4px;
-    padding: 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    box-shadow: 0 4px 30px rgba(0,0,0,0.85);
-    overflow-x: hidden;
+    width: 100%; max-width: 860px; background: var(--panel); border: 2px solid var(--border);
+    border-radius: 4px; padding: 14px; display: flex; flex-direction: column; gap: 12px;
+    box-shadow: 0 4px 30px rgba(0,0,0,0.85); overflow-x: hidden;
   }
   .header-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px dashed var(--cyan);
-    padding-bottom: 8px;
-    font-weight: bold;
-    color: var(--cyan);
-    flex-wrap: wrap;
-    gap: 8px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px dashed var(--cyan); padding-bottom: 8px; font-weight: bold;
+    color: var(--cyan); flex-wrap: wrap; gap: 8px;
   }
   .header-controls { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
   .header-btn {
-    background: #091018;
-    border: 1px solid var(--border);
-    color: var(--text-dim);
-    font-family: inherit;
-    font-size: 10px;
-    font-weight: bold;
-    padding: 4px 8px;
-    cursor: pointer;
+    background: #091018; border: 1px solid var(--border); color: var(--text-dim);
+    font-family: inherit; font-size: 10px; font-weight: bold; padding: 4px 8px; cursor: pointer;
   }
   .header-btn:hover { color: #fff; border-color: var(--cyan); }
   .prestige-badge {
-    background: #231904;
-    border: 1px solid var(--gold);
-    color: var(--gold);
-    font-family: inherit;
-    font-size: 10px;
-    font-weight: bold;
-    padding: 4px 8px;
-    cursor: pointer;
+    background: #231904; border: 1px solid var(--gold); color: var(--gold);
+    font-family: inherit; font-size: 10px; font-weight: bold; padding: 4px 8px; cursor: pointer;
   }
   .prestige-badge:hover { background: #382705; color: #fff; }
   .god-btn {
-    background: #251214;
-    border: 1px solid var(--red);
-    color: var(--red);
-    font-family: inherit;
-    font-size: 10px;
-    font-weight: bold;
-    padding: 4px 8px;
-    cursor: pointer;
+    background: #251214; border: 1px solid var(--red); color: var(--red);
+    font-family: inherit; font-size: 10px; font-weight: bold; padding: 4px 8px; cursor: pointer;
   }
   .god-btn.active { background: var(--red); color: #fff; box-shadow: 0 0 8px rgba(239,68,68,0.6); }
   .nav-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; }
   @media (max-width: 640px) { .nav-grid { grid-template-columns: repeat(3, 1fr); } }
   .nav-btn {
-    background: #091018;
-    border: 1px solid var(--border);
-    color: var(--text-dim);
-    padding: 8px 3px;
-    text-align: center;
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 11px;
-    font-weight: bold;
-    text-transform: uppercase;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    background: #091018; border: 1px solid var(--border); color: var(--text-dim);
+    padding: 8px 3px; text-align: center; cursor: pointer; font-family: inherit;
+    font-size: 11px; font-weight: bold; text-transform: uppercase; overflow: hidden;
+    text-overflow: ellipsis; white-space: nowrap;
   }
   .nav-btn:hover { color: #fff; border-color: var(--cyan); }
   .nav-btn.active {
-    background: var(--panel);
-    color: var(--cyan);
-    border-color: var(--cyan);
+    background: var(--panel); color: var(--cyan); border-color: var(--cyan);
     box-shadow: inset 0 -2px 0 var(--cyan);
   }
   .tab-content { display: none; width: 100%; overflow-x: hidden; }
   .tab-content.active-tab { display: block; }
-
-  /* BATTLE ARENA & BLUEPRINT PADS */
   #battle-stage {
     background: radial-gradient(circle at 50% 50%, #152435 0%, #080f18 80%);
-    border: 2px solid var(--border);
-    border-radius: 4px;
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    position: relative;
-    box-shadow: inset 0 0 24px rgba(0,0,0,0.85);
-    overflow: hidden;
+    border: 2px solid var(--border); border-radius: 4px; padding: 12px;
+    display: flex; flex-direction: column; gap: 8px; position: relative;
+    box-shadow: inset 0 0 24px rgba(0,0,0,0.85); overflow: hidden;
   }
   .stage-row { display: flex; justify-content: space-between; align-items: center; width: 100%; min-height: 125px; }
   .combatant-zone { display: flex; align-items: center; gap: 14px; flex: 1; }
   .combatant-zone.enemy-side { justify-content: flex-end; }
   .hud-plaque {
-    background: rgba(15, 25, 38, 0.94);
-    border: 1px solid var(--border);
-    padding: 8px 10px;
-    border-radius: 3px;
-    min-width: 190px;
-    max-width: 260px;
-    font-size: 11px;
+    background: rgba(15, 25, 38, 0.94); border: 1px solid var(--border);
+    padding: 8px 10px; border-radius: 3px; min-width: 190px; max-width: 260px; font-size: 11px;
   }
   .hud-plaque.player-plaque { border-left: 3px solid var(--cyan); }
   .hud-plaque.enemy-plaque { border-right: 3px solid var(--red); text-align: right; }
   .sprite-box {
-    width: 124px;
-    height: 124px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 120px; height: 120px; display: flex; align-items: center; justify-content: center;
     background: radial-gradient(circle, #cbd5e1 0%, #94a3b8 70%, #64748b 100%);
-    border-radius: 50%;
-    border: 2px solid #0f172a;
+    border-radius: 50%; border: 2px solid #0f172a;
     box-shadow: 0 4px 12px rgba(0,0,0,0.6), inset 0 0 8px rgba(0,0,0,0.3);
-    padding: 8px;
-    transition: transform 0.15s ease;
+    padding: 6px; transition: transform 0.15s ease;
   }
   .sprite-box svg { width: 100%; height: 100%; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
   .shake-hit { animation: hit-shake 0.25s ease-in-out; }
   @keyframes hit-shake {
-    0% { transform: translate(0, 0); }
-    25% { transform: translate(-8px, 4px); }
-    50% { transform: translate(8px, -4px); }
-    75% { transform: translate(-4px, -2px); }
+    0% { transform: translate(0, 0); } 25% { transform: translate(-8px, 4px); }
+    50% { transform: translate(8px, -4px); } 75% { transform: translate(-4px, -2px); }
     100% { transform: translate(0, 0); }
   }
-
-  /* 2-TIER COCKPIT CONSOLE */
   #battle-console {
-    background: #091018;
-    border: 1px solid var(--border);
-    padding: 10px;
-    margin-top: 8px;
-    border-radius: 3px;
+    background: #091018; border: 1px solid var(--border); padding: 10px;
+    margin-top: 8px; border-radius: 3px;
   }
   .prompt-line {
-    color: var(--gold);
-    font-weight: bold;
-    font-size: 12px;
-    margin-bottom: 8px;
-    border-bottom: 1px dashed #1a2c3f;
-    padding-bottom: 4px;
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 4px;
+    color: var(--gold); font-weight: bold; font-size: 12px; margin-bottom: 8px;
+    border-bottom: 1px dashed #1a2c3f; padding-bottom: 4px; display: flex;
+    justify-content: space-between; flex-wrap: wrap; gap: 4px;
   }
   .console-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   @media (max-width: 480px) { .console-grid { grid-template-columns: 1fr; } }
   button.action-tile {
-    background: #111a24;
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 9px 10px;
-    cursor: pointer;
-    font-family: inherit;
-    text-align: left;
-    transition: 0.1s;
-    font-size: 11px;
+    background: #111a24; border: 1px solid var(--border); color: var(--text);
+    padding: 9px 10px; cursor: pointer; font-family: inherit; text-align: left;
+    transition: 0.1s; font-size: 11px;
   }
-  button.action-tile:hover:not(:disabled) {
-    border-color: var(--cyan);
-    background: #192a3c;
-    color: #fff;
-  }
+  button.action-tile:hover:not(:disabled) { border-color: var(--cyan); background: #192a3c; color: #fff; }
   button.action-tile:disabled { opacity: 0.35; cursor: not-allowed; }
   .action-title { font-weight: bold; display: block; }
   .action-meta { font-size: 10px; color: var(--text-dim); display: block; margin-top: 2px; }
-
   #log {
-    height: 130px;
-    background: #070d14;
-    border: 1px solid var(--border);
-    padding: 10px;
-    overflow-y: auto;
-    font-size: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+    height: 130px; background: #070d14; border: 1px solid var(--border);
+    padding: 10px; overflow-y: auto; font-size: 12px; display: flex;
+    flex-direction: column; gap: 4px;
   }
   .log-entry { color: var(--text); word-break: break-word; }
-  .log-alert { color: var(--amber); }
-  .log-crit { color: var(--red); font-weight: bold; }
-  .log-success { color: var(--green); font-weight: bold; }
-  .log-info { color: var(--cyan); }
-  .log-legendary { color: var(--purple); font-weight: bold; }
-  .log-gold { color: var(--gold); font-weight: bold; }
-
+  .log-alert { color: var(--amber); } .log-crit { color: var(--red); font-weight: bold; }
+  .log-success { color: var(--green); font-weight: bold; } .log-info { color: var(--cyan); }
+  .log-legendary { color: var(--purple); font-weight: bold; } .log-gold { color: var(--gold); font-weight: bold; }
   .scroll-container { max-height: 400px; overflow-y: auto; overflow-x: hidden; background: #070d14; border: 1px solid var(--border); padding: 8px; }
   .specimen-list-item {
-    border: 1px solid var(--border);
-    background: var(--panel);
-    padding: 8px 10px;
-    margin-bottom: 6px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 8px;
+    border: 1px solid var(--border); background: var(--panel); padding: 8px 10px;
+    margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 8px;
   }
   .specimen-list-item.selected { border-color: var(--cyan); background: #132435; }
   .specimen-info { flex: 1 1 240px; min-width: 0; }
   .item-actions { display: flex; gap: 4px; flex-wrap: wrap; }
   .mini-btn {
-    background: #091018;
-    border: 1px solid var(--border);
-    color: var(--text);
-    font-family: inherit;
-    font-size: 10px;
-    padding: 5px 8px;
-    cursor: pointer;
-    white-space: nowrap;
+    background: #091018; border: 1px solid var(--border); color: var(--text);
+    font-family: inherit; font-size: 10px; padding: 5px 8px; cursor: pointer; white-space: nowrap;
   }
   .mini-btn:hover { border-color: var(--cyan); color: #fff; }
   .forge-panel { border: 1px solid var(--purple); background: #161120; padding: 10px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; }
@@ -274,7 +149,7 @@
 
 <div id="terminal">
   <div class="header-bar">
-    <span>ACES ALLEY // TACTICAL AIR OS V5.0</span>
+    <span>ACES ALLEY // TACTICAL AIR OS V5.2</span>
     <div class="header-controls">
       <button class="prestige-badge" id="prestige-btn" onclick="executePrestige()">PRESTIGE: ★0</button>
       <button class="header-btn" onclick="saveGame(false)">SAVE</button>
@@ -338,7 +213,6 @@
   <div id="tab-arena" class="tab-content">
     <div style="margin-bottom:8px; font-weight:bold; color:var(--cyan);">RED FLAG COMBAT CIRCUITS // TOP GUN ENGAGEMENTS</div>
     <div class="btn-sub" style="margin-bottom:12px;">Victory yields high Kerosene purses and an Aggressor Trophy Airframe boosted by up to +500%. Tow cables are prohibited.</div>
-    
     <div class="arena-card">
       <div>
         <strong style="color:var(--text);">CADET DIVISION (TIER 1 - 3)</strong>
@@ -406,8 +280,8 @@
   <div id="tab-corner" class="tab-content">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
       <div>
-        <strong style="color:var(--gold);">THE HANGAR // DEFENSE CONTRACTOR AUCTION</strong>
-        <div class="btn-sub">List up to 5 airframes. 20-second bidding frenzy. Multipliers surge from 33% to upwards of 10,000%!</div>
+        <strong style="color:var(--gold);">THE HANGAR // HIGH-SPEED DEFENSE AUCTION</strong>
+        <div class="btn-sub">List up to 5 airframes. 40-second rapid-bidding countdown. Multipliers range from 33% to upwards of 10,000%!</div>
       </div>
       <span id="auction-slot-count" style="color:var(--text-dim); font-size:11px;">ACTIVE LISTINGS: 0 / 5</span>
     </div>
@@ -468,61 +342,51 @@
 <script>
 // --- PROCEDURAL 10-TIER / 1,100-AIRCRAFT ENGINE ---
 const TIER_DATA = [
-  // TIER 1: Interwar & Pre-WWII Pioneers (1930-1939)
   { t:1, aff:"SUPERIORITY", arch:"f16", list:[
     ["P-26 Peashooter",2,8,0,32,42],["Gloster Gladiator",2,9,0,34,44],["Fiat CR.42 Falco",2,10,0,33,45],
     ["I-16 Ishak",3,8,0,36,40],["Dewoitine D.520",3,8,0,37,42],["Heinkel He 112",3,7,0,38,40],
     ["Polikarpov I-153",2,11,0,30,48],["Fokker D.XXI",3,7,0,36,42],["Breda Ba.65",4,6,0,40,38],["Morane-Saulnier M.S.406",3,8,0,35,42]
   ]},
-  // TIER 2: Early WWII Warbirds (1939-1942)
   { t:2, aff:"INTERCEPT", arch:"f16", list:[
     ["P-40 Warhawk",4,7,0,45,46],["Spitfire Mk I",3,10,0,42,48],["Bf 109E Emil",4,9,0,44,46],
     ["A6M2 Zero",2,11,0,36,52],["F4F Wildcat",5,7,0,48,44],["Yak-1",3,9,0,42,46],
     ["Macchi C.202",4,9,0,44,45],["MiG-3 HighAlt",3,8,0,43,48],["Hurricane Mk II",4,8,0,46,44],["Boulton Paul Defiant",4,6,0,44,40]
   ]},
-  // TIER 3: Mid/Late WWII Apex Warbirds (1943-1945)
   { t:3, aff:"STRIKE", arch:"a10", list:[
     ["P-51D Mustang",5,9,0,55,54],["F4U-4 Corsair",6,8,0,60,52],["P-47D Thunderbolt",7,7,0,66,48],
     ["Spitfire Mk XIV",4,11,0,52,56],["Fw 190D-9 Dora",6,8,0,58,50],["Bf 109K-4 Kurfurst",5,10,0,54,52],
     ["Yak-3 Dogfighter",3,11,0,48,56],["La-7 ThreeCannon",4,10,0,52,52],["Tempest Mk V",6,9,0,58,54],["Il-2M3 Shturmovik",9,4,0,72,40]
   ]},
-  // TIER 4: 1st-Gen Jet Pioneers (1945-1953)
   { t:4, aff:"SUPERIORITY", arch:"f16", list:[
     ["Me 262A Schwalbe",5,8,0,62,56],["Meteor F.8",5,8,0,64,54],["P-80C Shooting Star",5,9,0,60,58],
     ["F-86F Sabre",6,9,0,68,58],["MiG-15bis Fagot",6,9,0,66,58],["F9F-5 Panther",6,8,0,65,55],
     ["MD.450 Ouragan",5,8,0,62,56],["De Havilland Vampire",4,9,0,58,58],["Saab J 29 Tunnan",6,8,0,66,54],["Yak-23 Flora",4,10,0,56,60]
   ]},
-  // TIER 5: 2nd-Gen Mach 1+ Interceptors (1954-1962)
   { t:5, aff:"INTERCEPT", arch:"f18", list:[
     ["F-100D Super Sabre",7,8,0,76,64],["MiG-19S Farmer",6,10,0,72,66],["F-104G Starfighter",5,12,0,68,76],
     ["EE Lightning F.6",7,11,0,75,78],["Mirage IIIC",6,10,0,72,70],["Saab 35 Draken",6,11,0,74,72],
     ["Su-7B Fitter",8,7,0,82,62],["F-8E Crusader",6,10,0,74,68],["Hawker Hunter F.6",6,9,0,72,66],["Super Mystere B.2",6,9,0,70,66]
   ]},
-  // TIER 6: 3rd-Gen Heavy Interceptors & Strikers (1963-1974)
   { t:6, aff:"ELECTRONIC", arch:"f18", list:[
     ["F-4E Phantom II",8,8,9,92,76],["MiG-21bis Fishbed",5,11,10,80,82],["MiG-23MLD Flogger",7,9,10,88,80],
     ["MiG-25P Foxbat Mach 3",9,7,11,110,90],["F-105D Thunderchief",9,7,8,102,72],["Mirage F1C",6,11,9,86,78],
     ["Saab 37 Viggen",8,10,9,94,78],["A-7E Corsair II",8,8,8,96,72],["Buccaneer S.2",10,7,8,104,70],["Su-15TM Flagon",8,9,10,92,82]
   ]},
-  // TIER 7: 4th-Gen Air Superiority Legends (1975-1989)
   { t:7, aff:"SUPERIORITY", arch:"flanker", list:[
     ["F-14D Super Tomcat",10,10,14,128,94],["F-15C Eagle",9,12,15,122,98],["F-16C Block 50 Viper",7,13,14,105,104],
     ["F/A-18C Hornet",8,12,14,112,100],["Su-27 Flanker-B",9,13,15,125,102],["MiG-29S Fulcrum",7,13,14,106,98],
     ["Mirage 2000-5",7,12,13,108,100],["Panavia Tornado IDS",10,9,14,124,90],["A-10C Warthog",14,5,16,145,74],["Su-25T Frogfoot",13,6,15,138,76]
   ]},
-  // TIER 8: 4.5-Gen Enhanced Strike & Heavy Bombers (1990-2005)
   { t:8, aff:"STRIKE", arch:"flanker", list:[
     ["F/A-18E Super Hornet",11,11,18,155,108],["F-15EX Eagle II",12,11,18,165,112],["Su-30SM Flanker-H",11,13,19,160,110],
     ["Su-35S Super Flanker",11,15,20,164,115],["Su-34 Fullback Platypus",14,9,19,180,102],["Eurofighter Typhoon",10,14,18,150,115],
     ["Dassault Rafale F4",10,14,19,152,112],["JAS 39E Gripen",9,14,18,144,114],["B-1B Lancer Bone",15,7,17,210,100],["Tu-160 White Swan",16,7,18,225,104]
   ]},
-  // TIER 9: 5th-Gen Stealth Titans (2005-2020)
   { t:9, aff:"STEALTH", arch:"f22", list:[
     ["F-22A Raptor",16,16,25,210,145],["F-35A Lightning II",15,13,27,195,135],["Su-57 Felon",15,17,26,215,145],
     ["J-20 Mighty Dragon",16,15,26,220,140],["B-2 Spirit Flying Wing",18,6,28,260,128],["F-117A Nighthawk",12,8,20,145,100],
     ["YF-23 Black Widow II",15,16,25,208,148],["Su-47 Berkut FSW",14,18,22,205,148],["B-52H Stratofortress",17,4,16,245,92],["X-29 FSW Testbed",12,18,21,188,150]
   ]},
-  // TIER 10: 6th-Gen Hypersonic & Sub-Orbital Apex (2020+)
   { t:10, aff:"STEALTH", arch:"b2", list:[
     ["SR-71A Blackbird Habu",18,8,24,250,170],["SR-72 Scramjet Son",20,10,30,280,185],["Darkstar Mach 10",21,11,32,295,190],
     ["NGAD Air Dominance",19,18,34,270,175],["F/A-XX Navy 6th-Gen",18,17,32,260,170],["B-21 Raider Raider",21,7,35,310,150],
@@ -530,33 +394,23 @@ const TIER_DATA = [
   ]}
 ];
 
-const CONFIG_MODS = [
-  "Block 10", "Block 20", "Block 30", "Block 40", "Block 50", 
-  "Carrier Wing", "Night Attack", "Aggressor Spec", "SEAD Wild Weasel", "Tactical Recon", "Prototype X"
-];
+const CONFIG_MODS = ["Block 10","Block 20","Block 30","Block 40","Block 50","Carrier Wing","Night Attack","Aggressor Spec","SEAD Weasel","Tactical Recon","Prototype X"];
 
-// Compile precisely 1,100 unique aircraft
 const SPECIES_DB = [];
-TIER_DATA.forEach(tierObj => {
-  tierObj.list.forEach(([baseName, c, a, x, h, st]) => {
+TIER_DATA.forEach(to => {
+  to.list.forEach(([baseName, c, a, x, h, st]) => {
     CONFIG_MODS.forEach((mod, mIdx) => {
       const scale = 1 + (mIdx * 0.035);
       SPECIES_DB.push({
-        name: `${baseName} [${mod}]`,
-        arch: tierObj.arch,
-        aff: tierObj.aff,
-        tier: tierObj.t,
-        car: Math.round(c * scale),
-        agi: Math.round(a * scale),
+        name: `${baseName} [${mod}]`, arch: to.arch, aff: to.aff, tier: to.t,
+        car: Math.round(c * scale), agi: Math.round(a * scale),
         tox: x > 0 ? Math.round(x * scale) : 0,
-        hp: Math.round(h * scale),
-        sta: Math.round(st * scale)
+        hp: Math.round(h * scale), sta: Math.round(st * scale)
       });
     });
   });
 });
 
-// 5-WAY DOCTRINE ADVANTAGE MATRIX
 const TYPE_MATRIX = {
   SUPERIORITY: { strong: "INTERCEPT",   weak: "ELECTRONIC" },
   INTERCEPT:   { strong: "STRIKE",      weak: "SUPERIORITY" },
@@ -575,42 +429,130 @@ const LIVERY_TIERS = [
 ];
 
 const BIDDER_NAMES = [
-  "Lockheed_SkunkWorks", "Sukhoi_OKB", "TopGun_AggressorSquad", "BAE_Warton",
-  "Dassault_Aviation", "Boeing_PhantomWorks", "Saab_Linkoping", "Northrop_Grumman_B2",
-  "Mikoyan_Engineering", "DARPA_Tactical_Office", "AeroVironment", "PacificAirCommand",
-  "NellisAggressors", "ZhukovskyFlightTest", "GrummanIronWorks", "MirageConsortium"
+  "Lockheed_SkunkWorks", "Sukhoi_OKB", "TopGun_Aggressors", "BAE_Warton",
+  "Dassault_Aviation", "Boeing_PhantomWorks", "Saab_Linkoping", "Northrop_B2",
+  "Mikoyan_OKB", "DARPA_Tactical", "AeroVironment", "PacificAirCommand",
+  "NellisAggressors", "ZhukovskyTest", "GrummanIronWorks", "MirageConsortium"
 ];
 
 let state = {
-  pith: 15,
-  jars: 5,
-  proJars: 0,
-  lures: 0,
-  wave: 1,
-  prestige: 0,
-  godMode: false,
-  inCombat: false,
-  combatMode: 'wild',
-  active: null,
-  wild: null,
-  arenaOpponent: null,
-  arenaDivision: 1,
-  roster: [],
-  discovered: {},
-  sortMode: 'value',
-  auctions: [],
-  menuTier: 'main'
+  pith: 15, jars: 5, proJars: 0, lures: 0, wave: 1, prestige: 0,
+  godMode: false, inCombat: false, combatMode: 'wild', active: null, wild: null,
+  arenaOpponent: null, arenaDivision: 1, roster: [], discovered: {},
+  sortMode: 'value', auctions: [], menuTier: 'main'
 };
 
 function uid() { return 'u_' + Math.random().toString(36).substr(2, 9); }
 
-// --- PERSISTENCE ---
+function renderSpriteSvg(arch, isPlayer) {
+  const transform = isPlayer ? "" : "transform='scale(-1, 1) translate(-120, 0)'";
+  let body = "";
+  if (arch === "a10") {
+    body = `
+      <g stroke="#000" stroke-width="2.5" fill="#f8fafc" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M60,8 L64,16 L64,88 L56,88 L56,16 Z"/>
+        <line x1="60" y1="8" x2="60" y2="4" stroke="#000" stroke-width="3"/>
+        <rect x="36" y="56" width="13" height="26" rx="4" fill="#cbd5e1"/>
+        <rect x="71" y="56" width="13" height="26" rx="4" fill="#cbd5e1"/>
+        <polygon points="56,38 8,46 8,62 56,58"/>
+        <polygon points="64,38 112,46 112,62 64,58"/>
+        <rect x="6" y="48" width="4" height="12"/>
+        <rect x="110" y="48" width="4" height="12"/>
+        <polygon points="34,88 86,88 84,96 36,96"/>
+        <rect x="32" y="80" width="6" height="24" rx="2" fill="#cbd5e1"/>
+        <rect x="82" y="80" width="6" height="24" rx="2" fill="#cbd5e1"/>
+        <ellipse cx="60" cy="28" rx="3.5" ry="9" fill="#000"/>
+      </g>`;
+  } else if (arch === "f18") {
+    body = `
+      <g stroke="#000" stroke-width="2.5" fill="#f8fafc" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M60,6 L65,28 L67,96 L53,96 L55,28 Z"/>
+        <path d="M55,30 Q45,50 32,58 L53,64 Z" fill="#cbd5e1"/>
+        <path d="M65,30 Q75,50 88,58 L67,64 Z" fill="#cbd5e1"/>
+        <polygon points="32,58 10,70 12,78 53,70"/>
+        <polygon points="88,58 110,70 108,78 67,70"/>
+        <line x1="8" y1="68" x2="8" y2="82" stroke="#000" stroke-width="3"/>
+        <line x1="112" y1="68" x2="112" y2="82" stroke="#000" stroke-width="3"/>
+        <polygon points="46,74 38,98 48,96"/>
+        <polygon points="74,74 82,98 72,96"/>
+        <rect x="53" y="96" width="6" height="6" fill="#000"/>
+        <rect x="61" y="96" width="6" height="6" fill="#000"/>
+        <ellipse cx="60" cy="26" rx="3.5" ry="11" fill="#000"/>
+      </g>`;
+  } else if (arch === "f22") {
+    body = `
+      <g stroke="#000" stroke-width="2.5" fill="#f8fafc" stroke-linejoin="round" stroke-linecap="round">
+        <polygon points="60,6 74,32 114,72 88,78 76,70 60,78 44,70 32,78 6,72 46,32"/>
+        <polygon points="40,60 34,88 44,84" fill="#cbd5e1"/>
+        <polygon points="80,60 86,88 76,84" fill="#cbd5e1"/>
+        <line x1="60" y1="6" x2="60" y2="76" stroke="#000" stroke-width="1.5" stroke-dasharray="6,3"/>
+        <polygon points="60,18 64,28 60,40 56,28" fill="#000"/>
+        <rect x="52" y="78" width="7" height="6" fill="#000"/>
+        <rect x="61" y="78" width="7" height="6" fill="#000"/>
+      </g>`;
+  } else if (arch === "b2") {
+    body = `
+      <g stroke="#000" stroke-width="2.5" fill="#f8fafc" stroke-linejoin="round" stroke-linecap="round">
+        <polygon points="60,16 116,68 100,74 88,68 76,74 60,68 44,74 32,68 20,74 4,68"/>
+        <polygon points="48,36 54,34 52,42 46,44" fill="#000"/>
+        <polygon points="72,36 66,34 68,42 74,44" fill="#000"/>
+        <circle cx="57" cy="22" r="2" fill="#000"/><circle cx="63" cy="22" r="2" fill="#000"/>
+      </g>`;
+  } else if (arch === "b52") {
+    body = `
+      <g stroke="#000" stroke-width="2.5" fill="#f8fafc" stroke-linejoin="round" stroke-linecap="round">
+        <polygon points="60,6 64,24 64,104 56,104 56,24"/>
+        <polygon points="56,34 4,56 4,66 56,52"/>
+        <polygon points="64,34 116,56 116,66 64,52"/>
+        <rect x="22" y="52" width="6" height="18" rx="2" fill="#cbd5e1"/>
+        <rect x="36" y="47" width="6" height="18" rx="2" fill="#cbd5e1"/>
+        <rect x="78" y="47" width="6" height="18" rx="2" fill="#cbd5e1"/>
+        <rect x="92" y="52" width="6" height="18" rx="2" fill="#cbd5e1"/>
+        <polygon points="56,92 36,106 42,110 56,102 64,102 78,110 84,106 64,92"/>
+        <rect x="58" y="80" width="4" height="24" fill="#000"/>
+        <ellipse cx="60" cy="14" rx="3" ry="5" fill="#000"/>
+      </g>`;
+  } else if (arch === "flanker") {
+    body = `
+      <g stroke="#000" stroke-width="2.5" fill="#f8fafc" stroke-linejoin="round" stroke-linecap="round">
+        <polygon points="60,6 65,24 67,90 53,90 55,24"/>
+        <path d="M55,26 Q42,46 30,54 L53,60 Z" fill="#cbd5e1"/>
+        <path d="M65,26 Q78,46 90,54 L67,60 Z" fill="#cbd5e1"/>
+        <polygon points="30,54 8,66 10,74 53,68"/>
+        <polygon points="90,54 112,66 110,74 67,68"/>
+        <line x1="6" y1="64" x2="6" y2="78" stroke="#000" stroke-width="3"/>
+        <line x1="114" y1="64" x2="114" y2="78" stroke="#000" stroke-width="3"/>
+        <polygon points="58,82 62,82 63,108 57,108" fill="#cbd5e1"/>
+        <rect x="46" y="90" width="7" height="8" fill="#000"/>
+        <rect x="67" y="90" width="7" height="8" fill="#000"/>
+        <polygon points="46,68 38,94 48,90"/>
+        <polygon points="74,68 82,94 72,90"/>
+        <ellipse cx="60" cy="24" rx="3.5" ry="10" fill="#000"/>
+      </g>`;
+  } else {
+    body = `
+      <g stroke="#000" stroke-width="2.5" fill="#f8fafc" stroke-linejoin="round" stroke-linecap="round">
+        <polygon points="60,8 65,28 66,90 54,90 55,28"/>
+        <polygon points="54,42 16,56 16,66 54,64"/>
+        <polygon points="66,42 104,56 104,66 66,64"/>
+        <line x1="14" y1="54" x2="14" y2="68" stroke="#000" stroke-width="3"/>
+        <line x1="106" y1="54" x2="106" y2="68" stroke="#000" stroke-width="3"/>
+        <rect x="58" y="66" width="4" height="28" fill="#000"/>
+        <polygon points="54,82 34,94 38,98 54,92"/>
+        <polygon points="66,82 86,94 82,98 66,92"/>
+        <rect x="55" y="90" width="10" height="7" fill="#000"/>
+        <ellipse cx="60" cy="27" rx="4" ry="11" fill="#000"/>
+      </g>`;
+  }
+  return `<svg viewBox="0 0 120 120"><g ${transform}>${body}</g></svg>`;
+}
+
 function saveGame(silent = false) {
   const saveObj = {
     pith: state.pith, jars: state.jars, proJars: state.proJars, lures: state.lures,
     wave: state.wave, prestige: state.prestige, godMode: state.godMode,
-    activeId: state.active ? state.active.id : null,
-    roster: state.roster, discovered: state.discovered, sortMode: state.sortMode
+    activeId: state.active ? state.active.id : null, roster: state.roster,
+    discovered: state.discovered, sortMode: state.sortMode
   };
   try {
     localStorage.setItem('aces_alley_v5_save', JSON.stringify(saveObj));
@@ -623,16 +565,10 @@ function loadGame() {
     const data = localStorage.getItem('aces_alley_v5_save');
     if (!data) return false;
     const p = JSON.parse(data);
-    state.pith = p.pith ?? 15;
-    state.jars = p.jars ?? 5;
-    state.proJars = p.proJars ?? 0;
-    state.lures = p.lures ?? 0;
-    state.wave = p.wave ?? 1;
-    state.prestige = p.prestige ?? 0;
-    state.godMode = p.godMode ?? false;
-    state.sortMode = p.sortMode ?? 'value';
-    state.discovered = p.discovered ?? {};
-    state.roster = p.roster ?? [];
+    state.pith = p.pith ?? 15; state.jars = p.jars ?? 5; state.proJars = p.proJars ?? 0;
+    state.lures = p.lures ?? 0; state.wave = p.wave ?? 1; state.prestige = p.prestige ?? 0;
+    state.godMode = p.godMode ?? false; state.sortMode = p.sortMode ?? 'value';
+    state.discovered = p.discovered ?? {}; state.roster = p.roster ?? [];
     if (state.roster.length > 0) {
       const found = state.roster.find(u => u.id === p.activeId);
       state.active = found || state.roster[0];
@@ -652,7 +588,6 @@ function wipeSave() {
   }
 }
 
-// PRESTIGE SYSTEM: Strategic Air Command Recommission
 function executePrestige() {
   if (state.wave < 15 && state.prestige === 0) {
     writeLog("PRESTIGE LOCKED: Clear at least Sortie Wave #15 to recommission command!", "crit");
@@ -663,19 +598,14 @@ function executePrestige() {
     state.prestige++;
     state.wave = 1;
     state.pith = 30 + (state.prestige * 20);
-    state.jars = 5;
-    state.proJars = 1;
-    state.lures = 1;
+    state.jars = 5; state.proJars = 1; state.lures = 1;
     state.auctions = [];
-    
-    // Starter boosted by prestige
     const starter = createUnit(SPECIES_DB[0]);
     starter.name = `[T1] ${starter.name}`;
     state.active = starter;
     state.roster = [starter];
-    
     writeLog(`*** AIR WING RECOMMISSIONED! PRESTIGE RANK ★${state.prestige} ACHIEVED! ***`, "gold");
-    writeLog(`Permanent +${state.prestige * 15}% Combat Multiplier activated across all future aircraft.`, "legendary");
+    writeLog(`Permanent +${state.prestige * 15}% Combat Multiplier activated.`, "legendary");
     saveGame(true);
     setExploreMode();
   }
@@ -718,25 +648,10 @@ function createUnit(t) {
   const tox = t.tox > 0 ? Math.round(t.tox * prestigeStatMult) : 0;
   const agi = Math.round(t.agi * prestigeStatMult);
   return {
-    id: uid(),
-    name: t.name,
-    arch: t.arch || "f16",
-    aff: t.aff || "SUPERIORITY",
-    tier: t.tier,
-    hp: hp,
-    sta: sta,
-    car: car,
-    tox: tox,
-    agi: agi,
-    maxHp: hp,
-    curHp: hp,
-    maxSta: sta,
-    curSta: sta,
-    instar: 1, // Block I
-    morph: "Standard Ghost Grey",
-    venomTicks: 0,
-    fortified: 0,
-    debuffCar: 0
+    id: uid(), name: t.name, arch: t.arch || "f16", aff: t.aff || "SUPERIORITY",
+    tier: t.tier, hp: hp, sta: sta, car: car, tox: tox, agi: agi,
+    maxHp: hp, curHp: hp, maxSta: sta, curSta: sta, instar: 1,
+    morph: "Standard Ghost Grey", venomTicks: 0, fortified: 0, debuffCar: 0
   };
 }
 
@@ -744,12 +659,8 @@ function toggleGodMode() {
   state.godMode = !state.godMode;
   const btn = document.getElementById("god-mode-btn");
   if (state.godMode) {
-    btn.textContent = "GOD MODE: ON";
-    btn.classList.add("active");
-    state.pith = 999999;
-    state.jars = 999;
-    state.proJars = 999;
-    state.lures = 999;
+    btn.textContent = "GOD MODE: ON"; btn.classList.add("active");
+    state.pith = 999999; state.jars = 999; state.proJars = 999; state.lures = 999;
     if (state.active) {
       state.active.maxHp = 9999; state.active.curHp = 9999;
       state.active.maxSta = 9999; state.active.curSta = 9999;
@@ -757,172 +668,12 @@ function toggleGodMode() {
     }
     writeLog("GOD MODE ENGAGED: Infinite Kerosene, 100% Recovery Cables & Invulnerable Airframe!", "gold");
   } else {
-    btn.textContent = "GOD MODE: OFF";
-    btn.classList.remove("active");
+    btn.textContent = "GOD MODE: OFF"; btn.classList.remove("active");
     state.pith = 500;
     writeLog("GOD MODE DISENGAGED: Standard flight physics re-engaged.", "alert");
   }
   saveGame(true);
   updateUI();
-}
-
-// --- CRISP BLACK OUTLINE VECTOR ENGINE (A-10, F-18, F-22, B-2, B-52, F-16, FLANKER) ---
-function renderSpriteSvg(arch, isPlayer) {
-  const transform = isPlayer ? "" : "transform='scale(-1, 1) translate(-120, 0)'";
-  let body = "";
-
-  if (arch === "a10") {
-    // A-10 Thunderbolt II (Twin fuselage-mount turbofans, straight wings, twin vertical stabs, GAU-8 nose)
-    body = `
-      <g stroke="#000000" stroke-width="2.5" fill="#f8fafc" stroke-linejoin="round" stroke-linecap="round">
-        <!-- Fuselage & Nose Cannon -->
-        <path d="M60,8 L64,16 L64,88 L56,88 L56,16 Z"/>
-        <line x1="60" y1="8" x2="60" y2="4" stroke="#000000" stroke-width="3"/>
-        <!-- High Fuselage Turbofan Nacelles -->
-        <rect x="36" y="56" width="13" height="26" rx="4" fill="#cbd5e1"/>
-        <rect x="71" y="56" width="13" height="26" rx="4" fill="#cbd5e1"/>
-        <!-- Straight Wings & Pylons -->
-        <polygon points="56,38 8,46 8,62 56,58"/>
-        <polygon points="64,38 112,46 112,62 64,58"/>
-        <!-- Wingtip fairings -->
-        <rect x="6" y="48" width="4" height="12"/>
-        <rect x="110" y="48" width="4" height="12"/>
-        <!-- Horizontal Tail & Twin Vertical Fins -->
-        <polygon points="34,88 86,88 84,96 36,96"/>
-        <rect x="32" y="80" width="6" height="24" rx="2" fill="#cbd5e1"/>
-        <rect x="82" y="80" width="6" height="24" rx="2" fill="#cbd5e1"/>
-        <!-- Armored Bathtub Canopy -->
-        <ellipse cx="60" cy="28" rx="3.5" ry="9" fill="#000000"/>
-      </g>
-    `;
-  } else if (arch === "f18") {
-    // F/A-18 Hornet (Sweeping curved LERX, canted twin rudders, swept trapezoid wings, twin nozzles)
-    body = `
-      <g stroke="#000000" stroke-width="2.5" fill="#f8fafc" stroke-linejoin="round" stroke-linecap="round">
-        <!-- Radome and Fuselage -->
-        <path d="M60,6 L65,28 L67,96 L53,96 L55,28 Z"/>
-        <!-- Distinct Curved LERX -->
-        <path d="M55,30 Q45,50 32,58 L53,64 Z" fill="#cbd5e1"/>
-        <path d="M65,30 Q75,50 88,58 L67,64 Z" fill="#cbd5e1"/>
-        <!-- Swept Trapezoidal Wings -->
-        <polygon points="32,58 10,70 12,78 53,70"/>
-        <polygon points="88,58 110,70 108,78 67,70"/>
-        <!-- Wingtip Missile Rails -->
-        <line x1="8" y1="68" x2="8" y2="82" stroke="#000000" stroke-width="3"/>
-        <line x1="112" y1="68" x2="112" y2="82" stroke="#000000" stroke-width="3"/>
-        <!-- Canted Twin Tails -->
-        <polygon points="46,74 38,98 48,96"/>
-        <polygon points="74,74 82,98 72,96"/>
-        <!-- Twin Nozzles -->
-        <rect x="53" y="96" width="6" height="6" fill="#000000"/>
-        <rect x="61" y="96" width="6" height="6" fill="#000000"/>
-        <!-- Canopy -->
-        <ellipse cx="60" cy="26" rx="3.5" ry="11" fill="#000000"/>
-      </g>
-    `;
-  } else if (arch === "f22") {
-    // F-22 Raptor (Diamond planform wing, faceted chine, canted stabilizers, stealth nozzles)
-    body = `
-      <g stroke="#000000" stroke-width="2.5" fill="#f8fafc" stroke-linejoin="round" stroke-linecap="round">
-        <!-- Planform Diamond Wings & Stealth Chines -->
-        <polygon points="60,6 74,32 114,72 88,78 76,70 60,78 44,70 32,78 6,72 46,32"/>
-        <!-- Canted Vertical Rudders -->
-        <polygon points="40,60 34,88 44,84" fill="#cbd5e1"/>
-        <polygon points="80,60 86,88 76,84" fill="#cbd5e1"/>
-        <!-- Center Fuselage Spine -->
-        <line x1="60" y1="6" x2="60" y2="76" stroke="#000000" stroke-width="1.5" stroke-dasharray="6,3"/>
-        <!-- Faceted Stealth Canopy -->
-        <polygon points="60,18 64,28 60,40 56,28" fill="#000000"/>
-        <!-- Vectoring Nozzles -->
-        <rect x="52" y="78" width="7" height="6" fill="#000000"/>
-        <rect x="61" y="78" width="7" height="6" fill="#000000"/>
-      </g>
-    `;
-  } else if (arch === "b2") {
-    // B-2 Spirit (Pure Flying Wing, saw-tooth trailing edge, zero vertical tails)
-    body = `
-      <g stroke="#000000" stroke-width="2.5" fill="#f8fafc" stroke-linejoin="round" stroke-linecap="round">
-        <!-- Stealth Flying Wing Chevron Outline -->
-        <polygon points="60,16 116,68 100,74 88,68 76,74 60,68 44,74 32,68 20,74 4,68"/>
-        <!-- Buried Engine Inlets -->
-        <polygon points="48,36 54,34 52,42 46,44" fill="#000000"/>
-        <polygon points="72,36 66,34 68,42 74,44" fill="#000000"/>
-        <!-- Cockpit Glass Windows -->
-        <circle cx="57" cy="22" r="2" fill="#000000"/>
-        <circle cx="63" cy="22" r="2" fill="#000000"/>
-      </g>
-    `;
-  } else if (arch === "b52") {
-    // B-52 Stratofortress (Slender long fuselage, swept high-wings, 4 twin-engine pods, massive single fin)
-    body = `
-      <g stroke="#000000" stroke-width="2.5" fill="#f8fafc" stroke-linejoin="round" stroke-linecap="round">
-        <!-- Long Fuselage -->
-        <polygon points="60,6 64,24 64,104 56,104 56,24"/>
-        <!-- High Swept Wings -->
-        <polygon points="56,34 4,56 4,66 56,52"/>
-        <polygon points="64,34 116,56 116,66 64,52"/>
-        <!-- 4 Twin Engine Pods (Underwing) -->
-        <rect x="22" y="52" width="6" height="18" rx="2" fill="#cbd5e1"/>
-        <rect x="36" y="47" width="6" height="18" rx="2" fill="#cbd5e1"/>
-        <rect x="78" y="47" width="6" height="18" rx="2" fill="#cbd5e1"/>
-        <rect x="92" y="52" width="6" height="18" rx="2" fill="#cbd5e1"/>
-        <!-- Swept Tailplane & Massive Fin -->
-        <polygon points="56,92 36,106 42,110 56,102 64,102 78,110 84,106 64,92"/>
-        <rect x="58" y="80" width="4" height="24" fill="#000000"/>
-        <!-- Greenhouse Nose -->
-        <ellipse cx="60" cy="14" rx="3" ry="5" fill="#000000"/>
-      </g>
-    `;
-  } else if (arch === "flanker") {
-    // Su-27 / Su-35 Flanker (Twin tails, long central sting tail boom, prominent arching LERX)
-    body = `
-      <g stroke="#000000" stroke-width="2.5" fill="#f8fafc" stroke-linejoin="round" stroke-linecap="round">
-        <!-- Radome & Slender Fuselage -->
-        <polygon points="60,6 65,24 67,90 53,90 55,24"/>
-        <!-- Flanker Arching LERX -->
-        <path d="M55,26 Q42,46 30,54 L53,60 Z" fill="#cbd5e1"/>
-        <path d="M65,26 Q78,46 90,54 L67,60 Z" fill="#cbd5e1"/>
-        <!-- Swept Wings & Wingtip Missile Launchers -->
-        <polygon points="30,54 8,66 10,74 53,68"/>
-        <polygon points="90,54 112,66 110,74 67,68"/>
-        <line x1="6" y1="64" x2="6" y2="78" stroke="#000000" stroke-width="3"/>
-        <line x1="114" y1="64" x2="114" y2="78" stroke="#000000" stroke-width="3"/>
-        <!-- Prominent Tail Sting Boom -->
-        <polygon points="58,82 62,82 63,108 57,108" fill="#cbd5e1"/>
-        <!-- Twin Engine Exhausts -->
-        <rect x="46" y="90" width="7" height="8" fill="#000000"/>
-        <rect x="67" y="90" width="7" height="8" fill="#000000"/>
-        <!-- Twin Outward Vertical Tails -->
-        <polygon points="46,68 38,94 48,90"/>
-        <polygon points="74,68 82,94 72,90"/>
-        <!-- Canopy -->
-        <ellipse cx="60" cy="24" rx="3.5" ry="10" fill="#000000"/>
-      </g>
-    `;
-  } else {
-    // F-16 Fighting Falcon (Cropped delta wings, large bubble canopy, single central vertical tail, chin inlet)
-    body = `
-      <g stroke="#000000" stroke-width="2.5" fill="#f8fafc" stroke-linejoin="round" stroke-linecap="round">
-        <!-- Fuselage Core & Nose -->
-        <polygon points="60,8 65,28 66,90 54,90 55,28"/>
-        <!-- Cropped Delta Wings & Wingtip Sidewinder Rails -->
-        <polygon points="54,42 16,56 16,66 54,64"/>
-        <polygon points="66,42 104,56 104,66 66,64"/>
-        <line x1="14" y1="54" x2="14" y2="68" stroke="#000000" stroke-width="3"/>
-        <line x1="106" y1="54" x2="106" y2="68" stroke="#000000" stroke-width="3"/>
-        <!-- Ventral Fins & Single Central Rudder -->
-        <rect x="58" y="66" width="4" height="28" fill="#000000"/>
-        <polygon points="54,82 34,94 38,98 54,92"/>
-        <polygon points="66,82 86,94 82,98 66,92"/>
-        <!-- Single Big Engine Nozzle -->
-        <rect x="55" y="90" width="10" height="7" fill="#000000"/>
-        <!-- Frameless Teardrop Bubble Canopy -->
-        <ellipse cx="60" cy="27" rx="4" ry="11" fill="#000000"/>
-      </g>
-    `;
-  }
-
-  return `<svg viewBox="0 0 120 120"><g ${transform}>${body}</g></svg>`;
 }
 
 function setTab(tabName) {
@@ -958,24 +709,19 @@ function init() {
     writeLog(`TELEMETRY LOADED: Welcome back, Commander. Rank: ★${state.prestige} | Wave: #${state.wave}.`, "gold");
   }
   setExploreMode();
-  setInterval(processAuctionsTick, 1000);
+  setInterval(processAuctionsTick, 500); // 500ms high-speed tick rate
   setInterval(() => saveGame(true), 15000);
   window.addEventListener('beforeunload', () => saveGame(true));
 }
 
 function setExploreMode() {
-  state.inCombat = false;
-  state.wild = null;
-  state.arenaOpponent = null;
-  state.menuTier = 'main';
-  updateUI();
+  state.inCombat = false; state.wild = null; state.arenaOpponent = null;
+  state.menuTier = 'main'; updateUI();
 }
 
 function setCombatMode(mode = 'wild') {
-  state.inCombat = true;
-  state.combatMode = mode;
-  state.menuTier = 'main';
-  updateUI();
+  state.inCombat = true; state.combatMode = mode;
+  state.menuTier = 'main'; updateUI();
 }
 
 function updateUI() {
@@ -995,9 +741,7 @@ function updateUI() {
     document.getElementById("stage-player-sta").textContent = makeBar(p.curSta, p.maxSta);
     document.getElementById("stage-player-sta-num").textContent = `${p.curSta}/${p.maxSta}`;
     pBox.innerHTML = renderSpriteSvg(p.arch, true);
-  } else {
-    pBox.innerHTML = "";
-  }
+  } else { pBox.innerHTML = ""; }
 
   if (w && state.inCombat) {
     document.getElementById("stage-enemy-name").textContent = (w.isBoss ? "[ACE BOSS] " : "") + `[T${w.tier}] ${w.name}`;
@@ -1009,14 +753,11 @@ function updateUI() {
 
     const tag = document.getElementById("matchup-tag");
     if (TYPE_MATRIX[p.aff]?.strong === w.aff) {
-      tag.textContent = `[DOCTRINE ADVANTAGE: 1.5x]`;
-      tag.style.color = "var(--green)";
+      tag.textContent = `[DOCTRINE ADVANTAGE: 1.5x]`; tag.style.color = "var(--green)";
     } else if (TYPE_MATRIX[p.aff]?.weak === w.aff) {
-      tag.textContent = `[DOCTRINE DISADVANTAGE: 0.75x]`;
-      tag.style.color = "var(--red)";
+      tag.textContent = `[DOCTRINE DISADVANTAGE: 0.75x]`; tag.style.color = "var(--red)";
     } else {
-      tag.textContent = `[NEUTRAL ENCOUNTER]`;
-      tag.style.color = "var(--cyan)";
+      tag.textContent = `[NEUTRAL ENCOUNTER]`; tag.style.color = "var(--cyan)";
     }
   } else {
     document.getElementById("stage-enemy-name").textContent = "RADAR CLEAR";
@@ -1055,8 +796,7 @@ function renderBattleConsole() {
       <button class="action-tile" onclick="cycleFighter()">
         <span class="action-title">4. CYCLE FLIGHT LEAD</span>
         <span class="action-meta">Swap active fighter</span>
-      </button>
-    `;
+      </button>`;
     return;
   }
 
@@ -1078,8 +818,7 @@ function renderBattleConsole() {
       <button class="action-tile" onclick="retreatFromBattle()">
         <span class="action-title" style="color:var(--red);">4. DISENGAGE</span>
         <span class="action-meta">Break off patrol and return to base</span>
-      </button>
-    `;
+      </button>`;
   } else {
     const p = state.active;
     prompt.textContent = `> SELECT TACTICAL STRIKE // BURNER: ${p.curSta}/${p.maxSta}`;
@@ -1102,8 +841,7 @@ function renderBattleConsole() {
       </button>
       <button class="action-tile" style="grid-column: 1 / -1; text-align:center; padding:6px;" onclick="state.menuTier='main'; renderBattleConsole();">
         <span class="action-title" style="color:var(--text-dim);">&lt; RETURN TO COMMAND OVERVIEW</span>
-      </button>
-    `;
+      </button>`;
   }
 }
 
@@ -1151,8 +889,7 @@ function executeMove(moveId) {
       triggerVisualShake("enemy-sprite-box");
       writeLog(`${p.name} scores 20mm kinetic hits for ${dmg} damage! (+5 Burner)`, "success");
     }
-  } 
-  else if (moveId === 2) {
+  } else if (moveId === 2) {
     if (p.curSta < 15 && !state.godMode) { writeLog("Burner depleted! Requires 15 Burner.", "crit"); return; }
     p.curSta = Math.max(0, p.curSta - 15);
     const dmg = calculateDamage(p, target, 5 + p.tox);
@@ -1160,15 +897,13 @@ function executeMove(moveId) {
     target.venomTicks += 3;
     triggerVisualShake("enemy-sprite-box");
     writeLog(`${p.name} launches Infrared Missile! ${dmg} direct damage and ignited electronic burn for 3 turns!`, "alert");
-  } 
-  else if (moveId === 3) {
+  } else if (moveId === 3) {
     if (p.curSta < 10 && !state.godMode) { writeLog("Burner depleted! Requires 10 Burner.", "crit"); return; }
     p.curSta = Math.max(0, p.curSta - 10);
     const gain = Math.max(3, Math.round(p.car * 0.35));
     p.fortified += gain;
     writeLog(`${p.name} dispenses infrared decoy flares! (+${gain} Armor defense for this dogfight)`, "info");
-  } 
-  else if (moveId === 4) {
+  } else if (moveId === 4) {
     if (p.curSta < 12 && !state.godMode) { writeLog("Burner depleted! Requires 12 Burner.", "crit"); return; }
     p.curSta = Math.max(0, p.curSta - 12);
     target.debuffCar += 4;
@@ -1180,14 +915,12 @@ function executeMove(moveId) {
     concludeVictory(target);
     return;
   }
-
   enemyTurn(target);
   updateUI();
 }
 
 function enemyTurn(enemy) {
   const p = state.active;
-
   if (enemy.venomTicks > 0) {
     const dot = Math.max(2, Math.round(enemy.tox * 0.75 + 2));
     enemy.curHp = Math.max(0, enemy.curHp - dot);
@@ -1203,7 +936,6 @@ function enemyTurn(enemy) {
     writeLog(`${p.name} performed a barrel roll and evaded the incoming bogey's pass!`, "success");
     return;
   }
-
   if (state.godMode) {
     writeLog(`Opponent fired missiles, but God Mode absorbed all damage!`, "info");
     return;
@@ -1257,14 +989,13 @@ function concludeVictory(target) {
     trophyUnit.name = `[CHAMPION +${buffPct}%] [T${trophyTmpl.tier}] ${trophyTmpl.name}`;
     state.roster.push(trophyUnit);
     state.discovered[trophyTmpl.name] = true;
-
     writeLog(`RED FLAG VICTORY! Claimed ${purse} Kerosene purse & Trophy: ${trophyUnit.name}!`, "gold");
   } else {
     if (target.isBoss) {
       const bossPurse = Math.round(150 * Math.pow(state.wave, 0.75));
       if (!state.godMode) state.pith += bossPurse;
 
-      const buffPct = Math.floor(Math.random() * 101) + 25; // +25% to +125%
+      const buffPct = Math.floor(Math.random() * 101) + 25;
       const buffMult = 1 + (buffPct / 100);
       const rewardTmpl = SPECIES_DB[Math.floor(Math.random() * SPECIES_DB.length)];
 
@@ -1290,7 +1021,6 @@ function concludeVictory(target) {
       if (!state.godMode) state.pith += bounty;
       writeLog(`Wave #${state.wave} cleared! Claimed ${bounty} Kerosene salvage bounty.`, "success");
     }
-
     state.wave++;
   }
   saveGame(true);
@@ -1344,7 +1074,6 @@ function scrambleSortie() {
     writeLog("Active lead fighter is inoperable! Service airframe first.", "crit");
     return;
   }
-
   const isBoss = (state.wave % 5 === 0);
   const p = state.active;
 
@@ -1358,7 +1087,6 @@ function scrambleSortie() {
   const pool = SPECIES_DB.filter(s => s.tier === targetTier) || SPECIES_DB;
   const tmpl = pool[Math.floor(Math.random() * pool.length)];
 
-  // Sub-linear slow growth scaling formula
   const slowGrowthFactor = 0.70 + 0.30 * (Math.pow(state.wave, 0.65) / (Math.pow(state.wave, 0.65) + 6));
   const bossMultiplier = isBoss ? 1.45 : 1.0;
   const finalScale = slowGrowthFactor * bossMultiplier;
@@ -1383,7 +1111,6 @@ function scrambleSortie() {
   } else {
     writeLog(`Wave #${state.wave} Sortie: Radar contact with [T${tmpl.tier}] ${state.wild.name}!`, "info");
   }
-
   setCombatMode('wild');
 }
 
@@ -1580,10 +1307,10 @@ function listOnCorner(id) {
     currentBid: Math.min(startBid, targetFinalBid),
     highestBidder: BIDDER_NAMES[Math.floor(Math.random() * BIDDER_NAMES.length)],
     targetFinalBid: targetFinalBid,
-    timeLeft: 20
+    timeLeft: 40 // 40-second listing
   });
 
-  writeLog(`TAXIING TO RUNWAY: ${unit.name} listed on 20s block (Opening: ${startBid} Kerosene).`, "gold");
+  writeLog(`TAXIING TO RUNWAY: ${unit.name} listed on 40s rapid block (Opening: ${startBid} Kerosene).`, "gold");
   saveGame(true);
   renderVivarium();
   renderAuctions();
@@ -1593,13 +1320,14 @@ function processAuctionsTick() {
   if (state.auctions.length === 0) return;
   for (let i = state.auctions.length - 1; i >= 0; i--) {
     const auc = state.auctions[i];
-    auc.timeLeft--;
+    auc.timeLeft -= 0.5; // Rapid 500ms decrement
+
     if (auc.timeLeft > 0) {
-      if (Math.random() < 0.80) {
-        const remainingTicks = Math.max(1, auc.timeLeft);
+      if (Math.random() < 0.85) {
+        const remainingTicks = Math.max(1, Math.round(auc.timeLeft * 2));
         const bidGap = auc.targetFinalBid - auc.currentBid;
         if (bidGap > 0) {
-          const inc = Math.max(1, Math.round((bidGap / remainingTicks) * (0.6 + Math.random() * 0.8)));
+          const inc = Math.max(1, Math.round((bidGap / remainingTicks) * (0.8 + Math.random() * 0.8)));
           auc.currentBid = Math.min(auc.targetFinalBid, auc.currentBid + inc);
           auc.highestBidder = BIDDER_NAMES[Math.floor(Math.random() * BIDDER_NAMES.length)];
         }
@@ -1651,7 +1379,7 @@ function renderAuctions() {
       <div style="flex:1 1 200px; min-width:0;">
         <strong style="color:var(--gold); word-break:break-all;">${auc.unit.name}</strong>
         <div style="font-size:11px; color:var(--text-dim); margin-top:2px;">
-          BASE VAL: ${auc.baseValue} K | TIME: <span style="color:var(--red); font-weight:bold;">${auc.timeLeft}s</span>
+          BASE VAL: ${auc.baseValue} K | TIME: <span style="color:var(--red); font-weight:bold;">${Math.ceil(auc.timeLeft)}s</span>
         </div>
         <div style="font-size:12px; color:#fff; margin-top:4px;">
           HIGH BID: <span style="color:var(--gold); font-weight:bold; font-size:14px;">${auc.currentBid} K</span> (${mult}x) by <span style="color:var(--cyan);">${auc.highestBidder}</span>
@@ -1661,8 +1389,7 @@ function renderAuctions() {
         <button class="mini-btn" style="background:#2d260f; border-color:var(--gold); color:var(--gold); font-weight:bold; padding:8px 12px;" onclick="cashOutAuction('${auc.id}')">
           SIGN CONTRACT NOW (${auc.currentBid}K)
         </button>
-      </div>
-    `;
+      </div>`;
     container.appendChild(div);
   });
 }
@@ -1712,8 +1439,7 @@ function renderVivarium() {
         <button class="mini-btn" onclick="healUnit('${unit.id}')">SERVICE (2K)</button>
         <button class="mini-btn" style="color:var(--gold); border-color:var(--gold);" onclick="listOnCorner('${unit.id}')">AUCTION</button>
         ${state.roster.length > 1 ? `<button class="mini-btn" style="color:var(--red);" onclick="sellUnit('${unit.id}')">SCRAP SELL</button>` : ''}
-      </div>
-    `;
+      </div>`;
     list.appendChild(div);
   });
 }
