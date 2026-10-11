@@ -1,0 +1,1856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SKYSTRIKE // FLANKER TACTICAL OS</title>
+<style>
+  :root {
+    --bg: #090e15;
+    --panel: #111a24;
+    --border: #223548;
+    --text: #cbd5e1;
+    --text-dim: #64748b;
+    --cyan: #38bdf8;
+    --blue: #2563eb;
+    --flanker-dark: #162638;
+    --flanker-light: #1e3a5f;
+    --green: #22c55e;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --purple: #c084fc;
+    --gold: #fbbf24;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: "Courier New", Courier, monospace;
+    font-size: 13px;
+    line-height: 1.4;
+    padding: 12px;
+    display: flex;
+    justify-content: center;
+    background-image: 
+      linear-gradient(135deg, rgba(30, 58, 95, 0.15) 25%, transparent 25%), 
+      linear-gradient(225deg, rgba(30, 58, 95, 0.15) 25%, transparent 25%), 
+      linear-gradient(45deg, rgba(30, 58, 95, 0.15) 25%, transparent 25%), 
+      linear-gradient(315deg, rgba(30, 58, 95, 0.15) 25%, var(--bg) 25%);
+    background-position: 40px 0, 40px 0, 0 0, 0 0;
+    background-size: 80px 80px;
+    background-repeat: repeat;
+  }
+  #terminal {
+    width: 100%;
+    max-width: 860px;
+    background: var(--panel);
+    border: 2px solid var(--border);
+    border-radius: 4px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: 0 4px 28px rgba(0,0,0,0.75), inset 0 0 12px rgba(56, 189, 248, 0.05);
+  }
+  .header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px dashed var(--cyan);
+    padding-bottom: 8px;
+    font-weight: bold;
+    color: var(--cyan);
+  }
+  .header-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .header-btn {
+    background: #0b1219;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 3px 8px;
+    cursor: pointer;
+  }
+  .header-btn:hover { color: #fff; border-color: var(--cyan); }
+  .god-btn {
+    background: #251214;
+    border: 1px solid var(--red);
+    color: var(--red);
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 3px 8px;
+    cursor: pointer;
+  }
+  .god-btn.active {
+    background: var(--red);
+    color: #fff;
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+  }
+  .nav-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+  }
+  .nav-btn {
+    background: #0d1520;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 8px 4px;
+    text-align: center;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+  .nav-btn:hover { color: #fff; border-color: var(--cyan); }
+  .nav-btn.active {
+    background: var(--panel);
+    color: var(--cyan);
+    border-color: var(--cyan);
+    box-shadow: inset 0 -2px 0 var(--cyan);
+  }
+  .tab-content { display: none; }
+  .tab-content.active-tab { display: block; }
+  .telemetry-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .unit-card {
+    border: 1px solid var(--border);
+    padding: 10px;
+    background: #090e15;
+  }
+  .unit-card.active-player {
+    border-color: var(--cyan);
+    box-shadow: inset 0 0 8px rgba(56, 189, 248, 0.15);
+  }
+  .unit-card.active-enemy {
+    border-color: var(--red);
+    box-shadow: inset 0 0 8px rgba(239, 68, 68, 0.15);
+  }
+  .unit-card h3 {
+    margin-bottom: 6px;
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+  .bar-row { margin: 3px 0; font-size: 12px; }
+  .meter { font-weight: bold; }
+  #log {
+    height: 160px;
+    background: #090e15;
+    border: 1px solid var(--border);
+    padding: 10px;
+    overflow-y: auto;
+    font-size: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .log-entry { color: var(--text); }
+  .log-alert { color: var(--amber); }
+  .log-crit { color: var(--red); font-weight: bold; }
+  .log-success { color: var(--green); font-weight: bold; }
+  .log-info { color: var(--cyan); }
+  .log-legendary { color: var(--purple); font-weight: bold; }
+  .log-gold { color: var(--gold); font-weight: bold; }
+  .action-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  button.cmd-btn {
+    background: #0d1520;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: inherit;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 12px;
+    text-align: left;
+    transition: 0.1s;
+  }
+  button.cmd-btn:hover:not(:disabled) {
+    border-color: var(--cyan);
+    background: #142233;
+    color: #fff;
+  }
+  button.cmd-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+  .btn-sub {
+    font-size: 10px;
+    display: block;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+  .scroll-container {
+    max-height: 420px;
+    overflow-y: auto;
+    background: #090e15;
+    border: 1px solid var(--border);
+    padding: 8px;
+  }
+  .specimen-list-item {
+    border: 1px solid var(--border);
+    background: var(--panel);
+    padding: 8px 10px;
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .specimen-list-item.selected {
+    border-color: var(--cyan);
+    background: #122131;
+  }
+  .item-actions {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .mini-btn {
+    background: #0d1520;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 10px;
+    padding: 4px 6px;
+    cursor: pointer;
+  }
+  .mini-btn:hover { border-color: var(--cyan); color: #fff; }
+  .forge-panel {
+    border: 1px solid var(--purple);
+    background: #171022;
+    padding: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .forge-title {
+    font-weight: bold;
+    color: var(--purple);
+    font-size: 11px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .forge-controls {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 8px;
+  }
+  select.terminal-select {
+    background: #090e15;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 11px;
+    padding: 6px;
+  }
+  .sort-bar {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    background: #0b1219;
+    border: 1px solid var(--border);
+    padding: 6px 10px;
+    margin-bottom: 8px;
+  }
+  .sort-bar span { font-size: 11px; color: var(--text-dim); margin-right: 4px; }
+  .sort-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 3px 7px;
+    font-family: inherit;
+    font-size: 10px;
+    cursor: pointer;
+  }
+  .sort-btn.active {
+    border-color: var(--cyan);
+    color: var(--cyan);
+    background: #102133;
+  }
+  .auction-slot {
+    border: 1px solid var(--gold);
+    background: #1a1910;
+    padding: 10px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .arena-card, .shop-card {
+    border: 1px solid var(--border);
+    background: var(--panel);
+    padding: 12px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .bestiary-row {
+    font-size: 11px;
+    padding: 5px 8px;
+    border-bottom: 1px solid #1a2736;
+    display: flex;
+    justify-content: space-between;
+  }
+  .tier-hdr {
+    padding: 6px 8px;
+    font-weight: bold;
+    color: var(--cyan);
+    background: #112030;
+    border-bottom: 1px solid var(--border);
+    margin-top: 6px;
+  }
+</style>
+</head>
+<body>
+
+<div id="terminal">
+  <div class="header-bar">
+    <span>SKYSTRIKE // FLANKER TACTICAL OS V3.0</span>
+    <div class="header-controls">
+      <button class="header-btn" onclick="saveGame(false)">SAVE</button>
+      <button class="header-btn" style="color:var(--red);" onclick="wipeSave()">WIPE</button>
+      <button id="god-mode-btn" class="god-btn" onclick="toggleGodMode()">GOD MODE: OFF</button>
+      <span id="player-status">KEROSENE: 15 | CABLES: 5 | BEACONS: 0</span>
+    </div>
+  </div>
+
+  <div class="nav-grid">
+    <button id="nav-wild" class="nav-btn active" onclick="setTab('wild')">1. RADAR SWEEP</button>
+    <button id="nav-arena" class="nav-btn" onclick="setTab('arena')">2. RED FLAG</button>
+    <button id="nav-vivarium" class="nav-btn" onclick="setTab('vivarium')">3. FLIGHT LINE</button>
+    <button id="nav-corner" class="nav-btn" onclick="setTab('corner')">4. THE HANGAR</button>
+    <button id="nav-shop" class="nav-btn" onclick="setTab('shop')">5. QUARTERMASTER</button>
+    <button id="nav-guide" class="nav-btn" onclick="setTab('guide')">6. RECOGNITION</button>
+  </div>
+
+  <!-- TAB 1: RADAR SWEEP (EXPEDITIONS) -->
+  <div id="tab-wild" class="tab-content active-tab">
+    <div class="telemetry-grid">
+      <div class="unit-card active-player" id="player-card-wild">
+        <h3 id="player-name-wild">NO LEAD AIRCRAFT</h3>
+        <div class="bar-row">INTEGRITY: <span id="player-hp-meter-wild" class="meter">[----------]</span> <span id="player-hp-num-wild">0/0</span></div>
+        <div class="bar-row">BURNER: <span id="player-sta-meter-wild" class="meter">[----------]</span> <span id="player-sta-num-wild">0/0</span></div>
+        <div class="bar-row">ARM: <span id="player-scl-wild">0</span> | EW: <span id="player-tox-wild">0</span> | G-LIM: <span id="player-agi-wild">0</span></div>
+      </div>
+      <div class="unit-card" id="enemy-card-wild">
+        <h3 id="enemy-name-wild">RADAR CLEAR</h3>
+        <div class="bar-row">INTEGRITY: <span id="enemy-hp-meter-wild" class="meter">[----------]</span> <span id="enemy-hp-num-wild">0/0</span></div>
+        <div class="bar-row">BURNER: <span id="enemy-sta-meter-wild" class="meter">[----------]</span> <span id="enemy-sta-num-wild">0/0</span></div>
+        <div class="bar-row">ARM: <span id="enemy-scl-wild">0</span> | EW: <span id="enemy-tox-wild">0</span> | G-LIM: <span id="enemy-agi-wild">0</span></div>
+      </div>
+    </div>
+
+    <div class="action-grid" id="wild-actions">
+      <button class="cmd-btn" id="btn-wild-1" onclick="handleWildBtn(1)"><span id="btn-wild-1-label">SCRAMBLE PATROL</span><span id="btn-wild-1-sub" class="btn-sub">Search airspace for bogies</span></button>
+      <button class="cmd-btn" id="btn-wild-2" onclick="handleWildBtn(2)"><span id="btn-wild-2-label">REFUEL & SERVICE</span><span id="btn-wild-2-sub" class="btn-sub">Restore Integrity/Burner</span></button>
+      <button class="cmd-btn" id="btn-wild-3" onclick="handleWildBtn(3)"><span id="btn-wild-3-label">BUY TOW CABLE (5 KEROSENE)</span><span id="btn-wild-3-sub" class="btn-sub">Standard recovery line</span></button>
+      <button class="cmd-btn" id="btn-wild-4" onclick="handleWildBtn(4)"><span id="btn-wild-4-label">CYCLE SQUADRON LEAD</span><span id="btn-wild-4-sub" class="btn-sub">Swap active aircraft</span></button>
+    </div>
+  </div>
+
+  <!-- TAB 2: RED FLAG (THE ARENA) -->
+  <div id="tab-arena" class="tab-content">
+    <div id="arena-menu" style="display:block;">
+      <div style="margin-bottom:8px; font-weight:bold; color:var(--cyan);">RED FLAG COMBAT CIRCUITS // TOP GUN ENGAGEMENTS</div>
+      <div class="btn-sub" style="margin-bottom:12px;">Victory awards Kerosene fuel purses and an Aggressor Trophy Airframe boosted by up to +500%. Tow cables are prohibited.</div>
+      
+      <div class="arena-card">
+        <div>
+          <strong style="color:var(--text);">CADET DIVISION (TIER 1 - 2)</strong>
+          <div class="btn-sub">Entry: 20 Kerosene | Purse: 80 Kerosene + Trophy (+50% to +150% Boost)</div>
+        </div>
+        <button class="mini-btn" onclick="enterArena(1)">ENTER CIRCUIT</button>
+      </div>
+
+      <div class="arena-card">
+        <div>
+          <strong style="color:var(--cyan);">VETERAN DOGFIGHT (TIER 3 - 4)</strong>
+          <div class="btn-sub">Entry: 60 Kerosene | Purse: 240 Kerosene + Trophy (+100% to +300% Boost)</div>
+        </div>
+        <button class="mini-btn" onclick="enterArena(2)">ENTER CIRCUIT</button>
+      </div>
+
+      <div class="arena-card">
+        <div>
+          <strong style="color:var(--gold);">TOP GUN APEX (TIER 5 - 6)</strong>
+          <div class="btn-sub">Entry: 180 Kerosene | Purse: 750 Kerosene + God-Tier Trophy (+200% to +500% Boost)</div>
+        </div>
+        <button class="mini-btn" onclick="enterArena(3)">ENTER CIRCUIT</button>
+      </div>
+    </div>
+
+    <div id="arena-battle-view" style="display:none;">
+      <div class="telemetry-grid">
+        <div class="unit-card active-player" id="player-card-arena">
+          <h3 id="player-name-arena">NO LEAD AIRCRAFT</h3>
+          <div class="bar-row">INTEGRITY: <span id="player-hp-meter-arena" class="meter">[----------]</span> <span id="player-hp-num-arena">0/0</span></div>
+          <div class="bar-row">BURNER: <span id="player-sta-meter-arena" class="meter">[----------]</span> <span id="player-sta-num-arena">0/0</span></div>
+          <div class="bar-row">ARM: <span id="player-scl-arena">0</span> | EW: <span id="player-tox-arena">0</span> | G-LIM: <span id="player-agi-arena">0</span></div>
+        </div>
+        <div class="unit-card active-enemy" id="enemy-card-arena">
+          <h3 id="enemy-name-arena">AGGRESSOR BOGEY</h3>
+          <div class="bar-row">INTEGRITY: <span id="enemy-hp-meter-arena" class="meter">[----------]</span> <span id="enemy-hp-num-arena">0/0</span></div>
+          <div class="bar-row">BURNER: <span id="enemy-sta-meter-arena" class="meter">[----------]</span> <span id="enemy-sta-num-arena">0/0</span></div>
+          <div class="bar-row">ARM: <span id="enemy-scl-arena">0</span> | EW: <span id="enemy-tox-arena">0</span> | G-LIM: <span id="enemy-agi-arena">0</span></div>
+        </div>
+      </div>
+
+      <div class="action-grid">
+        <button class="cmd-btn" onclick="handleArenaCombat(1)"><span>20MM VULCAN BURST</span><span class="btn-sub">Kinetic gun pass (+5 Burner)</span></button>
+        <button class="cmd-btn" onclick="handleArenaCombat(2)"><span>RADAR JAMMING</span><span class="btn-sub">Cost: 15 Burner | Electronic DoT</span></button>
+        <button class="cmd-btn" onclick="handleArenaCombat(3)"><span>DISPENSE FLARES</span><span class="btn-sub">Cost: 10 Burner | Armor/RAM buff</span></button>
+        <button class="cmd-btn" onclick="handleArenaCombat(4)"><span>AFTERBURNER DIVE</span><span class="btn-sub">Cost: 25 Burner | 1.8x Heavy Strike</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: FLIGHT LINE & ASSEMBLY LINE -->
+  <div id="tab-vivarium" class="tab-content">
+    <div class="forge-panel">
+      <div class="forge-title">
+        <span>THE ASSEMBLY LINE // SPLICED BLUEPRINTS</span>
+        <span>COST: 15 KEROSENE (INHERITS PEAK AIRFRAME STATS + LIVERY ROLL)</span>
+      </div>
+      <div style="display:grid; grid-template-columns: 1fr 1fr auto; gap:8px;">
+        <select id="breed-parent-a" class="terminal-select"></select>
+        <select id="breed-parent-b" class="terminal-select"></select>
+        <button class="mini-btn" style="background:#201435; color:var(--purple); font-weight:bold;" onclick="breedSpecimens()">SPLICE AIRFRAME</button>
+      </div>
+    </div>
+
+    <div class="forge-panel" style="border-color:#1e3a5f; background:#0d1825;">
+      <div class="forge-title" style="color:var(--cyan);">
+        <span>SKUNKWORKS PROTOTYPE INTAKE // EXPERIMENTAL RIG</span>
+        <span>MODIFIER: +25% TO +100% AIRFRAME STAT MULTIPLIER</span>
+      </div>
+      <div class="forge-controls">
+        <select id="forge-select" class="terminal-select">
+          <option value="RANDOM">-- ANY RANDOM REAL AIRCRAFT --</option>
+        </select>
+        <button class="mini-btn" style="background:#0e2844; color:var(--cyan); font-weight:bold;" onclick="spawnCovetedClutch()">SPAWN AIRFRAME</button>
+      </div>
+    </div>
+
+    <div class="sort-bar">
+      <span>SORT SQUADRON:</span>
+      <button class="sort-btn active" id="sort-val" onclick="setSortMode('value')">VALUE</button>
+      <button class="sort-btn" id="sort-tier" onclick="setSortMode('tier')">TIER</button>
+      <button class="sort-btn" id="sort-stats" onclick="setSortMode('stats')">TOTAL STATS</button>
+      <button class="sort-btn" id="sort-name" onclick="setSortMode('name')">NAME</button>
+      <button class="mini-btn" style="margin-left:auto;" onclick="restAllSpecimens()">CREW CHIEF OVERHAUL ALL (15K)</button>
+    </div>
+
+    <div class="scroll-container" id="vivarium-list"></div>
+  </div>
+
+  <!-- TAB 4: THE HANGAR (LIVE AUCTION) -->
+  <div id="tab-corner" class="tab-content">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <div>
+        <strong style="color:var(--gold);">THE HANGAR // DEFENSE CONTRACTOR AUCTION</strong>
+        <div class="btn-sub">List up to 5 airframes. 15-second bidding frenzy. Multipliers surge from 50% up to 1,000%!</div>
+      </div>
+      <span id="auction-slot-count" style="color:var(--text-dim); font-size:11px;">ACTIVE LISTINGS: 0 / 5</span>
+    </div>
+    
+    <div class="scroll-container" id="auction-container" style="min-height: 200px;">
+      <div id="no-auctions-msg" style="color:var(--text-dim); padding:20px; text-align:center;">
+        No aircraft currently taxiing on the auction runway.<br>Go to the <strong style="color:var(--cyan);">FLIGHT LINE</strong> and click <strong style="color:var(--gold);">AUCTION</strong> on any airframe to launch a bidding run.
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 5: QUARTERMASTER -->
+  <div id="tab-shop" class="tab-content">
+    <div class="scroll-container">
+      <div class="shop-card">
+        <div>
+          <strong style="color:var(--text);">TOW CABLE RIG</strong>
+          <div class="btn-sub">Braided steel cable recovery line. Baseline retrieval tool.</div>
+        </div>
+        <button class="mini-btn" onclick="buyItem('jar', 5)">5 KEROSENE</button>
+      </div>
+      <div class="shop-card">
+        <div>
+          <strong style="color:var(--cyan);">HEAVY RECOVERY FLATBED</strong>
+          <div class="btn-sub">Hydraulic winch & lowboy transport (+30% recovery success rate).</div>
+        </div>
+        <button class="mini-btn" onclick="buyItem('proJar', 20)">20 KEROSENE</button>
+      </div>
+      <div class="shop-card">
+        <div>
+          <strong style="color:var(--amber);">IFF RADAR BEACON</strong>
+          <div class="btn-sub">Emits military interrogation signals. Guarantees Tier 3+ bogeys.</div>
+        </div>
+        <button class="mini-btn" onclick="buyItem('lure', 25)">25 KEROSENE</button>
+      </div>
+      <div class="shop-card">
+        <div>
+          <strong style="color:var(--green);">CREW CHIEF OVERHAUL</strong>
+          <div class="btn-sub">Full squadron maintenance. Instantly repairs all fleet airframes.</div>
+        </div>
+        <button class="mini-btn" onclick="buyItem('bedding', 15)">15 KEROSENE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 6: AIR RECOGNITION (500 AIRCRAFT) -->
+  <div id="tab-guide" class="tab-content">
+    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+      <span style="font-weight:bold; color:var(--cyan);">MILITARY AIR RECOGNITION MANUAL</span>
+      <span id="bestiary-progress" style="color:var(--green);">IDENTIFIED: 0 / 500</span>
+    </div>
+    <div class="scroll-container" id="bestiary-list"></div>
+  </div>
+
+  <!-- TERMINAL TELEMETRY LOG -->
+  <div id="log"></div>
+</div>
+
+<script>
+// --- 500 AUTHENTIC HISTORICAL & MODERN AIRCRAFT GENERATOR ---
+// 100 Legendary Airframe Lineages x 5 Authentic Historical Variants = 500 Aircraft
+const BASE_LINEAGES = [
+  // TIER 1: WWII Piston Legends & Early Pioneers (18 Lineages = 90 Aircraft)
+  { fam: "P-51 Mustang", car: 3, agi: 8, tox: 0, hp: 38, sta: 45, tier: 1, vars: ["P-51A Allison", "P-51B Merlin", "P-51D Bubbletop", "P-51K Dallas", "P-51H Lightweight"] },
+  { fam: "Supermarine Spitfire", car: 2, agi: 10, tox: 0, hp: 35, sta: 46, tier: 1, vars: ["Spitfire Mk I", "Spitfire Mk Vb", "Spitfire Mk IXc", "Spitfire Mk XIV Griffon", "Spitfire Mk 24"] },
+  { fam: "Messerschmitt Bf 109", car: 3, agi: 9, tox: 0, hp: 36, sta: 44, tier: 1, vars: ["Bf 109E-4 Emil", "Bf 109F-4 Friedrich", "Bf 109G-6 Gustav", "Bf 109G-14", "Bf 109K-4 Kurfurst"] },
+  { fam: "Focke-Wulf Fw 190", car: 5, agi: 7, tox: 0, hp: 44, sta: 42, tier: 1, vars: ["Fw 190A-3", "Fw 190A-8 Wurger", "Fw 190F-8 Ground Attack", "Fw 190D-9 Dora", "Ta 152H High Altitude"] },
+  { fam: "Mitsubishi A6M Zero", car: 1, agi: 11, tox: 0, hp: 28, sta: 52, tier: 1, vars: ["A6M2 Model 21", "A6M3 Model 32", "A6M5 Model 52", "A6M7 Model 62", "A6M8 Model 64"] },
+  { fam: "P-47 Thunderbolt", car: 6, agi: 5, tox: 0, hp: 55, sta: 40, tier: 1, vars: ["P-47B Jug", "P-47D Razorback", "P-47D Bubbletop", "P-47M Hot Rod", "P-47N Long Range"] },
+  { fam: "Vought F4U Corsair", car: 5, agi: 8, tox: 0, hp: 48, sta: 45, tier: 1, vars: ["F4U-1 Birdcage", "F4U-1A Whistling Death", "F4U-1D Fighter-Bomber", "F4U-4 Late War", "F4U-5 Cold War"] },
+  { fam: "P-38 Lightning", car: 4, agi: 7, tox: 0, hp: 48, sta: 46, tier: 1, vars: ["P-38E Early Fork", "P-38F Glaciere", "P-38G Pacific Twin", "P-38J Double Cockpit", "P-38L Lightning"] },
+  { fam: "Yakovlev Yak-3", car: 2, agi: 10, tox: 0, hp: 34, sta: 48, tier: 1, vars: ["Yak-1B", "Yak-3 Dogfighter", "Yak-3P Cannon", "Yak-9T Anti-Tank", "Yak-9U Late War"] },
+  { fam: "Lavochkin La-7", car: 3, agi: 9, tox: 0, hp: 40, sta: 45, tier: 1, vars: ["La-5", "La-5FN Shvetsov", "La-7 Three-Cannon", "La-9 Postwar", "La-11 Escort"] },
+  { fam: "Hawker Tempest", car: 5, agi: 8, tox: 0, hp: 46, sta: 44, tier: 1, vars: ["Hawker Typhoon Mk Ib", "Tempest Mk V Sabre", "Tempest Mk II Centaurus", "Fury Prototype", "Sea Fury FB.11"] },
+  { fam: "Grumman F6F Hellcat", car: 5, agi: 7, tox: 0, hp: 50, sta: 44, tier: 1, vars: ["F6F-3 Hellcat", "F6F-3N Night Fighter", "F6F-5 Hellcat", "F6F-5N Radar", "F8F-1 Bearcat"] },
+  { fam: "Messerschmitt Me 262", car: 4, agi: 8, tox: 0, hp: 45, sta: 50, tier: 1, vars: ["Me 262A-1a Schwalbe", "Me 262A-2a Sturmvogel", "Me 262B-1a Trainer", "Me 262B-1a/U1 Night", "Me 262C-1a Heimatschutzer"] },
+  { fam: "Gloster Meteor", car: 4, agi: 7, tox: 0, hp: 44, sta: 48, tier: 1, vars: ["Meteor F.1 Trent", "Meteor F.3 Derwent", "Meteor F.4 Twin Goblin", "Meteor F.8 Classic", "Meteor NF.11 Night"] },
+  { fam: "P-80 Shooting Star", car: 4, agi: 8, tox: 0, hp: 42, sta: 50, tier: 1, vars: ["YP-80A Lulu-Belle", "P-80A Shooting Star", "F-80C Korean Veteran", "T-33A Shooting Star", "F-94A Starfire"] },
+  { fam: "Ilyushin Il-2 Shturmovik", car: 8, agi: 3, tox: 0, hp: 60, sta: 35, tier: 1, vars: ["Il-2 Single Seat", "Il-2M Two-Seater", "Il-2 Type 3 Bark", "Il-10 Beast", "Il-10M Shturmovik"] },
+  { fam: "Junkers Ju 87 Stuka", car: 4, agi: 4, tox: 0, hp: 45, sta: 38, tier: 1, vars: ["Ju 87B-2 Jericho", "Ju 87R-2 Long Range", "Ju 87D-3 Dora", "Ju 87D-5 Extended Wing", "Ju 87G-2 Kanonenvogel"] },
+  { fam: "De Havilland Mosquito", car: 4, agi: 8, tox: 0, hp: 50, sta: 46, tier: 1, vars: ["Mosquito PR.I", "Mosquito F.II Fighter", "Mosquito FB.VI Wooden Wonder", "Mosquito B.IV Bomber", "Mosquito NF.30 Night"] },
+
+  // TIER 2: Early Jets & 1st/2nd Gen Transonic Interceptors (18 Lineages = 90 Aircraft)
+  { fam: "F-86 Sabre", car: 4, agi: 8, tox: 0, hp: 55, sta: 50, tier: 2, vars: ["F-86A Sabre", "F-86E All-Flying Tail", "F-86F Korean Ace", "F-86D Sabre Dog", "F-86K NATO Export"] },
+  { fam: "Mikoyan-Gurevich MiG-15", car: 5, agi: 8, tox: 0, hp: 54, sta: 50, tier: 2, vars: ["MiG-15 Fagot", "MiG-15bis Fagot-B", "MiG-15UTI Midget", "J-2 Chinese Export", "Lim-2 Polish Variant"] },
+  { fam: "MiG-17 Fresco", car: 5, agi: 9, tox: 0, hp: 56, sta: 52, tier: 2, vars: ["MiG-17 Fresco-A", "MiG-17F Afterburning", "MiG-17P Radar Interceptor", "MiG-17PF Fresco-D", "Shenyang J-5"] },
+  { fam: "Hawker Hunter", car: 5, agi: 8, tox: 0, hp: 58, sta: 52, tier: 2, vars: ["Hunter F.1 Avon", "Hunter F.4 Avon 115", "Hunter F.6 High Subsonic", "Hunter GA.11 Attack", "Hunter FGA.9 Ground"] },
+  { fam: "Dassault Ouragan / Mystere", car: 4, agi: 8, tox: 0, hp: 52, sta: 50, tier: 2, vars: ["MD.450 Ouragan", "Mystere II Transonic", "Mystere IV A Dogfighter", "Super Mystere B.2", "SMB2 Afterburning"] },
+  { fam: "F-84 Thunderjet", car: 6, agi: 6, tox: 0, hp: 60, sta: 48, tier: 2, vars: ["F-84B Thunderjet", "F-84E Long Range", "F-84G In-Flight Refuel", "F-84F Thunderstreak Swept", "RF-84F Thunderflash"] },
+  { fam: "F-100 Super Sabre", car: 6, agi: 7, tox: 0, hp: 62, sta: 54, tier: 2, vars: ["YF-100A Century Lead", "F-100A Supersonic", "F-100C Fighter-Bomber", "F-100D Hun", "F-100F Wild Weasel I"] },
+  { fam: "MiG-19 Farmer", car: 5, agi: 9, tox: 0, hp: 58, sta: 55, tier: 2, vars: ["MiG-19 Farmer-A", "MiG-19S Twin Cannon", "MiG-19P Radar Interceptor", "MiG-19PM Beam Rider", "Shenyang J-6"] },
+  { fam: "F-104 Starfighter", car: 4, agi: 10, tox: 0, hp: 50, sta: 62, tier: 2, vars: ["F-104A Missile with Man", "F-104C Tactical Strike", "F-104G Luftwaffe Widowmaker", "F-104J Eiko", "F-104S ASA Italian Dart"] },
+  { fam: "F-102 Delta Dagger", car: 6, agi: 6, tox: 0, hp: 64, sta: 52, tier: 2, vars: ["YF-102 Prototypes", "F-102A Area Ruled", "F-102A Falcon Armed", "TF-102A Side-by-Side", "QF-102 Target Drone"] },
+  { fam: "English Electric Lightning", car: 5, agi: 9, tox: 0, hp: 60, sta: 64, tier: 2, vars: ["Lightning F.1 Staggered", "Lightning F.2 Over-Wing", "Lightning F.3 High Altitude", "Lightning T.5 Trainer", "Lightning F.6 Mach 2 Interceptor"] },
+  { fam: "Saab 35 Draken", car: 5, agi: 9, tox: 0, hp: 58, sta: 58, tier: 2, vars: ["J 35A Double Delta", "J 35B Scramble Interceptor", "J 35D Mach 2 Draken", "J 35F Falcon Armed", "J 35J Modernized Draken"] },
+  { fam: "Dassault Mirage III", car: 4, agi: 9, tox: 0, hp: 56, sta: 56, tier: 2, vars: ["Mirage IIIC Delta Mach 2", "Mirage IIIE Attack", "Mirage 5 Striker", "Mirage 50 Snecma", "IAI Nesher Dagger"] },
+  { fam: "Sukhoi Su-7 Fitter", car: 7, agi: 6, tox: 0, hp: 66, sta: 50, tier: 2, vars: ["Su-7 Swept Prototype", "Su-7B Fitter-A", "Su-7BM Wet Thrust", "Su-7BKL Skis", "Su-7UM Moujik"] },
+  { fam: "F-8 Crusader", car: 5, agi: 9, tox: 0, hp: 60, sta: 56, tier: 2, vars: ["F-8A Variable Incidence", "F-8C MiG Master", "F-8E Radar Crusader", "F-8J Carrier Fighter", "F-8E(FN) French Navy"] },
+  { fam: "Vought F7U Cutlass", car: 5, agi: 6, tox: 0, hp: 54, sta: 48, tier: 2, vars: ["F7U-1 Tailless", "F7U-3 Gutless Cutlass", "F7U-3M Sparrow Beam", "F7U-3P Photo Recce", "A2U-1 Attack Draft"] },
+  { fam: "Grumman F9F Panther / Cougar", car: 5, agi: 7, tox: 0, hp: 56, sta: 50, tier: 2, vars: ["F9F-2 Panther Korea", "F9F-5 High Thrust", "F9F-6 Cougar Swept", "F9F-8 Cougar Refined", "F9F-8T Cougar Two-Seat"] },
+  { fam: "Sud-Ouest Vautour II", car: 7, agi: 5, tox: 0, hp: 68, sta: 48, tier: 2, vars: ["Vautour IIA Attack", "Vautour IIB Level Bomber", "Vautour IIN All-Weather", "Vautour IIBR Recce", "Vautour IIN Israeli Ace"] },
+
+  // TIER 3: Cold War Heavy Interceptors, Mach 2 Titans & EW (18 Lineages = 90 Aircraft)
+  { fam: "F-4 Phantom II", car: 7, agi: 7, tox: 7, hp: 78, sta: 64, tier: 3, vars: ["F-4B Navy Phantom", "F-4C Air Force Phantom", "F-4D Vietnam Strike", "F-4E Gun-Nose", "F-4G Advanced Wild Weasel"] },
+  { fam: "MiG-21 Fishbed", car: 4, agi: 9, tox: 8, hp: 68, sta: 68, tier: 3, vars: ["MiG-21F-13 Fishbed-C", "MiG-21PF Radar Cone", "MiG-21MF Spine Tank", "MiG-21bis High Thrust", "MiG-21-93 Bizon"] },
+  { fam: "MiG-23 Flogger", car: 6, agi: 7, tox: 8, hp: 74, sta: 66, tier: 3, vars: ["MiG-23S Swing Wing", "MiG-23M Flogger-B", "MiG-23MF Export", "MiG-23ML Lightweight", "MiG-23MLD Apex Flogger"] },
+  { fam: "F-105 Thunderchief", car: 8, agi: 5, tox: 6, hp: 86, sta: 58, tier: 3, vars: ["F-105B Lead Sled", "F-105D Thud", "F-105F Tandem Striker", "F-105G Iron Hand", "F-105G Wild Weasel III"] },
+  { fam: "Sukhoi Su-15 Flagon", car: 7, agi: 7, tox: 8, hp: 76, sta: 68, tier: 3, vars: ["Su-15 Flagon-A Delta", "Su-15T Tailless Radar", "Su-15TM Flagon-F", "Su-15UM Trainer", "Su-15bis Prototype"] },
+  { fam: "Dassault Mirage F1", car: 5, agi: 9, tox: 8, hp: 72, sta: 66, tier: 3, vars: ["Mirage F1C Air Superiority", "Mirage F1E Multi-Role", "Mirage F1CT Tactical Strike", "Mirage F1CR Reconnaissance", "Mirage F1AZ Ground Attack"] },
+  { fam: "Saab 37 Viggen", car: 7, agi: 8, tox: 8, hp: 78, sta: 64, tier: 3, vars: ["AJ 37 Attack Canard", "SF 37 Photo Recon", "SH 37 Maritime Recce", "JA 37 Jaktviggen", "JA 37D Modernized Viggen"] },
+  { fam: "General Dynamics F-111 Aardvark", car: 9, agi: 5, tox: 8, hp: 92, sta: 62, tier: 3, vars: ["F-111A Variable Geometry", "F-111C RAAF Pig", "F-111D Mark II Avionics", "F-111F Pave Tack", "EF-111A Raven Jammer"] },
+  { fam: "Sukhoi Su-17 / Su-22 Fitter", car: 7, agi: 7, tox: 7, hp: 78, sta: 60, tier: 3, vars: ["Su-17 Swing Fitter", "Su-17M2 Laser Ranger", "Su-17M4 Late Cold War", "Su-20 Export Striker", "Su-22M4 Attack Fitter"] },
+  { fam: "Mikoyan-Gurevich MiG-25 Foxbat", car: 8, agi: 5, tox: 9, hp: 95, sta: 75, tier: 3, vars: ["MiG-25P Mach 3 Foxbat", "MiG-25R Recon Titan", "MiG-25RB Bombing Foxbat", "MiG-25PD Saphir Radar", "MiG-25BM SEAD Defender"] },
+  { fam: "Harrier GR.1 / AV-8A", car: 4, agi: 10, tox: 6, hp: 64, sta: 72, tier: 3, vars: ["Kestrel FGA.1", "Harrier GR.1 Pegasus", "Harrier GR.3 Laser Nose", "AV-8A USMC Jumper", "Sea Harrier FRS.1 Falklands"] },
+  { fam: "LTV A-7 Corsair II", car: 7, agi: 6, tox: 7, hp: 80, sta: 58, tier: 3, vars: ["A-7A Navy Corsair", "A-7B Turbofan", "A-7D USAF SLUF", "A-7E Navy HUD Striker", "A-7K Air Guard Twin"] },
+  { fam: "Grumman A-6 Intruder", car: 8, agi: 5, tox: 8, hp: 88, sta: 56, tier: 3, vars: ["A-6A Vietnam Bomber", "A-6B Iron Hand", "A-6C Trails Sensor", "A-6E TRAM Intruder", "EA-6A Electric Intruder"] },
+  { fam: "SEPECAT Jaguar", car: 6, agi: 8, tox: 7, hp: 72, sta: 62, tier: 3, vars: ["Jaguar A French Strike", "Jaguar E French Trainer", "Jaguar S RAF GR.1", "Jaguar GR.3 Tiald", "Jaguar IS Indian Maritime"] },
+  { fam: "Blackburn Buccaneer", car: 9, agi: 5, tox: 7, hp: 88, sta: 58, tier: 3, vars: ["Buccaneer S.1 Gyron", "Buccaneer S.2 Spey Low-Level", "Buccaneer S.2B Gulf Veteran", "Buccaneer S.2D Martel", "Buccaneer S.50 South Africa"] },
+  { fam: "Convair F-106 Delta Dart", car: 6, agi: 8, tox: 7, hp: 74, sta: 66, tier: 3, vars: ["F-106A Ultimate Interceptor", "F-106A Genie Nuclear", "F-106B Tandem Dart", "F-106A M61 Vulcan Mod", "QF-106 Full-Scale Drone"] },
+  { fam: "Lockheed U-2 Dragon Lady", car: 2, agi: 6, tox: 10, hp: 55, sta: 90, tier: 3, vars: ["U-2A High Altitude", "U-2C Enlarged J75", "U-2R Senior Span", "TR-1A Tactical Recon", "U-2S Glass Cockpit"] },
+  { fam: "North American A-5 Vigilante", car: 7, agi: 7, tox: 7, hp: 85, sta: 64, tier: 3, vars: ["A-5A Linear Bay", "A-5B Fuel Saddle", "RA-5C Heavy Recce Vigilante", "RA-5C Carrier Camo", "RA-5C Vietnam Eye"] },
+
+  // TIER 4: 4th Generation Superiority & Naval Fleet Defense (18 Lineages = 90 Aircraft)
+  { fam: "Grumman F-14 Tomcat", car: 8, agi: 9, tox: 12, hp: 108, sta: 78, tier: 4, vars: ["F-14A TF30 Tomcat", "F-14A Tarps Recon", "F-14B GE-F110 Big Gun", "F-14D Super Tomcat Glass", "F-14 Bombcat Strike"] },
+  { fam: "McDonnell Douglas F-15 Eagle", car: 7, agi: 10, tox: 13, hp: 102, sta: 82, tier: 4, vars: ["F-15A Streak Eagle", "F-15C APG-63 Superiority", "F-15C Golden Eagle AESA", "F-15D Two-Seat Ghost", "F-15J JASDF Eagle"] },
+  { fam: "General Dynamics F-16 Fighting Falcon", car: 5, agi: 11, tox: 12, hp: 86, sta: 88, tier: 4, vars: ["F-16A Block 15 Fighting Falcon", "F-16C Block 30 Big Inlet", "F-16C Block 40 Night Falcon", "F-16C Block 50 SEAD Hunter", "F-16XL Cranked-Arrow Wing"] },
+  { fam: "Boeing F/A-18 Hornet", car: 6, agi: 11, tox: 12, hp: 92, sta: 84, tier: 4, vars: ["F/A-18A Strike Fighter", "F/A-18B Fleet Trainer", "F/A-18C Night Attack Hornet", "F/A-18D Marine All-Weather", "CF-188 Canadian Hornet"] },
+  { fam: "Sukhoi Su-27 Flanker", car: 7, agi: 12, tox: 13, hp: 105, sta: 86, tier: 4, vars: ["Su-27 Flanker-B Soviet Lead", "Su-27SK Export Flanker", "Su-27UB Tandem Flanker", "Su-27SM Mid-Life Upgrade", "Shenyang J-11A Flanker-L"] },
+  { fam: "Mikoyan MiG-29 Fulcrum", car: 5, agi: 12, tox: 12, hp: 88, sta: 82, tier: 4, vars: ["MiG-29 Fulcrum-A 9.12", "MiG-29S Fat Back 9.13", "MiG-29SE Export Dogfighter", "MiG-29SMT Glass Cockpit", "MiG-29K Carrier Fulcrum"] },
+  { fam: "Dassault Mirage 2000", car: 5, agi: 11, tox: 11, hp: 88, sta: 84, tier: 4, vars: ["Mirage 2000C Delta Interceptor", "Mirage 2000-5 Multi-Role", "Mirage 2000B Dual Trainer", "Mirage 2000D Strike Falcon", "Mirage 2000N Nuclear ASMP"] },
+  { fam: "Panavia Tornado", car: 8, agi: 8, tox: 13, hp: 104, sta: 76, tier: 4, vars: ["Tornado IDS Interdictor", "Tornado ADV Foxhunter", "Tornado F.3 Air Defense", "Tornado ECR Jammer Hunter", "Tornado GR.4 Gulf Veteran"] },
+  { fam: "Fairchild Republic A-10 Thunderbolt II", car: 12, agi: 4, tox: 14, hp: 125, sta: 60, tier: 4, vars: ["A-10A GAU-8 Warthog", "A-10A Desert Storm Pig", "A-10C Precision Engagement", "OA-10C Forward Air Control", "A-10 Night/Adverse Weather"] },
+  { fam: "Sukhoi Su-25 Frogfoot", car: 11, agi: 5, tox: 13, hp: 118, sta: 62, tier: 4, vars: ["Su-25 Grach Frogfoot", "Su-25K Export Grach", "Su-25T Anti-Tank Shkval", "Su-25SM Glass Cockpit", "Su-25UB Combat Trainer"] },
+  { fam: "Mikoyan MiG-31 Foxhound", car: 9, agi: 6, tox: 14, hp: 120, sta: 82, tier: 4, vars: ["MiG-31 Zaslon Foxhound", "MiG-31B Long Range Refuel", "MiG-31BS Upgraded Interceptor", "MiG-31BM Phased Array", "MiG-31K Kinzhal Carrier"] },
+  { fam: "Sukhoi Su-24 Fencer", car: 8, agi: 6, tox: 12, hp: 108, sta: 70, tier: 4, vars: ["Su-24 Fencer-A Swing Wing", "Su-24M Variable Strike", "Su-24MK Desert Fencer", "Su-24MR Tiger Recon", "Su-24MP Electronic Jammer"] },
+  { fam: "McDonnell Douglas AV-8B Harrier II", car: 5, agi: 10, tox: 11, hp: 84, sta: 86, tier: 4, vars: ["AV-8B Day Attack", "AV-8B Night Attack Flir", "AV-8B Harrier II Plus Radar", "Harrier GR.7 RAF Night", "Harrier GR.9 Precision Strike"] },
+  { fam: "Mitsubishi F-2 Viper Zero", car: 6, agi: 11, tox: 13, hp: 96, sta: 85, tier: 4, vars: ["F-2A AESA Composite Wing", "F-2B Tandem Viper Zero", "F-2A Maritime ASM-3", "F-2A Late Block Upgrade", "F-2 Super Kai Concept"] },
+  { fam: "Chengdu J-10 Firebird", car: 6, agi: 11, tox: 12, hp: 94, sta: 84, tier: 4, vars: ["J-10A Canard Delta Firebird", "J-10S Two-Seat Falcon", "J-10B Diverterless Supersonic", "J-10C AESA Firebird", "J-10CE Export Firebird"] },
+  { fam: "CAC/PAC JF-17 Thunder", car: 5, agi: 10, tox: 11, hp: 86, sta: 82, tier: 4, vars: ["JF-17 Thunder Block 1", "JF-17 Block 2 In-Flight Refuel", "JF-17B Tandem Trainer", "JF-17 Block 3 AESA Radar", "JF-17P PAF Air Defense"] },
+  { fam: "Saab JAS 39 Gripen C/D", car: 5, agi: 11, tox: 12, hp: 88, sta: 86, tier: 4, vars: ["JAS 39A Gripen Canard", "JAS 39B Two-Seat Gripen", "JAS 39C NATO Standard", "JAS 39D Operational Trainer", "JAS 39C Gripen Aggressor"] },
+  { fam: "Grumman EA-6B Prowler", car: 7, agi: 6, tox: 16, hp: 98, sta: 78, tier: 4, vars: ["EA-6B Standard Prowler", "EA-6B EXCAP Extended Cap", "EA-6B ICAP-II Band 9/10", "EA-6B ICAP-III Reactive", "EA-6B Night Prowler Jammer"] },
+
+  // TIER 5: 4.5 Generation Super-Fighters & Heavy Strategic Bombers (14 Lineages = 70 Aircraft)
+  { fam: "Boeing F/A-18E/F Super Hornet", car: 9, agi: 10, tox: 16, hp: 135, sta: 92, tier: 5, vars: ["F/A-18E Rhino Block I", "F/A-18F Super Hornet Block II", "F/A-18E Block III Conformal", "EA-18G Growler Next-Gen Jammer", "F/A-18E Blue Angels Lead"] },
+  { fam: "Boeing F-15E Strike Eagle", car: 10, agi: 9, tox: 15, hp: 145, sta: 95, tier: 5, vars: ["F-15E Strike Eagle Pave Tack", "F-15K Slam Eagle", "F-15SG Singapore Striker", "F-15QA Ababil Strike", "F-15EX Eagle II Fly-by-Wire"] },
+  { fam: "Sukhoi Su-30 Flanker-C/G/H", car: 9, agi: 11, tox: 16, hp: 138, sta: 94, tier: 5, vars: ["Su-30PU Long-Endurance", "Su-30MKI Indian Canard Vector", "Su-30MKK Maritime Flanker", "Su-30SM Thrust Vectoring", "Su-30SM2 Super-Flanker"] },
+  { fam: "Sukhoi Su-35 Flanker-E", car: 9, agi: 13, tox: 17, hp: 140, sta: 98, tier: 5, vars: ["Su-27M Super Flanker Test", "Su-37 Terminator Super-Maneuver", "Su-35S Irbis-E Phased Radar", "Su-35S Russian Knights", "Su-35SE Export Dominator"] },
+  { fam: "Sukhoi Su-34 Fullback", car: 12, agi: 8, tox: 16, hp: 155, sta: 88, tier: 5, vars: ["Su-27IB Armored Cockpit", "Su-34 Fullback Platypus", "Su-34M Modernized Fullback", "Su-34NVP Thermal Striker", "Su-34 Shkval Maritime"] },
+  { fam: "Eurofighter Typhoon", car: 8, agi: 12, tox: 16, hp: 130, sta: 98, tier: 5, vars: ["Typhoon DA Development", "Typhoon Tranche 1 Air Dominance", "Typhoon Tranche 2 Multi-Role", "Typhoon Tranche 3A Captor-E", "Typhoon Tranche 4 Quadriga"] },
+  { fam: "Dassault Rafale", car: 8, agi: 12, tox: 17, hp: 132, sta: 96, tier: 5, vars: ["Rafale A Canard Demonstrator", "Rafale B Two-Seat Omnirole", "Rafale C Single-Seat Fighter", "Rafale M Carrier Marine", "Rafale F4.1 Talios AESA"] },
+  { fam: "Saab JAS 39E Gripen", car: 7, agi: 12, tox: 16, hp: 125, sta: 96, tier: 5, vars: ["Gripen NG Demonstrator", "JAS 39E Gripen Smart Fighter", "JAS 39F Two-Seat Smart", "JAS 39E Raven ES-05 AESA", "Sea Gripen Maritime Concept"] },
+  { fam: "Mikoyan MiG-35 Super Fulcrum", car: 7, agi: 12, tox: 16, hp: 128, sta: 94, tier: 5, vars: ["MiG-35 Phazotron Zhuk-AE", "MiG-35D Dual Cockpit", "MiG-29M2 Prototype", "MiG-35S Russian VKS", "MiG-35 Export Super Fulcrum"] },
+  { fam: "Rockwell B-1B Lancer", car: 13, agi: 6, tox: 15, hp: 180, sta: 85, tier: 5, vars: ["B-1A Mach 2 White Bone", "B-1B Lancer Bone Low-Altitude", "B-1B BEAST Conventional Mod", "B-1B Sniper Pod Launcher", "B-1R Regional Strike Concept"] },
+  { fam: "Tupolev Tu-160 Blackjack", car: 14, agi: 6, tox: 16, hp: 195, sta: 88, tier: 5, vars: ["Tu-160 White Swan Blackjack", "Tu-160M Kuznetsov NK-32-02", "Tu-160M2 Deep Modernized", "Tu-160P Heavy Escort Fighter", "Tu-160 Cruise Missile Sovereign"] },
+  { fam: "Tupolev Tu-22M3 Backfire", car: 12, agi: 7, tox: 15, hp: 175, sta: 84, tier: 5, vars: ["Tu-22M0 Backfire-A", "Tu-22M2 Variable Geometry", "Tu-22M3 Kh-22 Carrier Killer", "Tu-22M3M Glass Cockpit", "Tu-22MR Maritime Recce"] },
+  { fam: "Boeing B-52 Stratofortress", car: 15, agi: 3, tox: 14, hp: 210, sta: 78, tier: 5, vars: ["B-52B Early Heavy BUFF", "B-52D Big Belly Vietnam", "B-52G Stand-Off Missile", "B-52H Stratofortress Turbofan", "B-52J Commercial Engine Re-fit"] },
+  { fam: "Lockheed F-117A Nighthawk", car: 10, agi: 7, tox: 17, hp: 120, sta: 85, tier: 5, vars: ["Have Blue Stealth Proof", "F-117A Nighthawk Desert Storm", "F-117A Black Jet Stealth", "F-117A Skunkworks Ghost", "F-117N Seahawk Carrier Draft"] },
+
+  // TIER 6: 5th Gen Stealth Titans, Hypersonic Relics & Black Projects (14 Lineages = 70 Aircraft)
+  { fam: "Lockheed Martin F-22 Raptor", car: 14, agi: 14, tox: 22, hp: 180, sta: 125, tier: 6, vars: ["YF-22 Lightning II Prototype", "F-22A Raptor Block 10", "F-22A Block 20 Dominance", "F-22A Block 35 AESA APG-77", "FB-22 Delta Strike Stealth"] },
+  { fam: "Lockheed Martin F-35 Lightning II", car: 13, agi: 11, tox: 24, hp: 170, sta: 115, tier: 6, vars: ["X-35 Joint Strike Fighter", "F-35A CTOL Air Force Ghost", "F-35B STOVL LiftFan Marine", "F-35C CATOBAR Navy Carrier", "F-35I Adir Israeli Stealth"] },
+  { fam: "Sukhoi Su-57 Felon", car: 13, agi: 15, tox: 23, hp: 185, sta: 125, tier: 6, vars: ["T-50 PAK FA Initial Proof", "Su-57 Felon Production Lead", "Su-57M Izdeliye 30 Engine", "Su-57E Export Felon", "FGFA Indo-Russian Co-Dev"] },
+  { fam: "Chengdu J-20 Mighty Dragon", car: 14, agi: 13, tox: 23, hp: 190, sta: 120, tier: 6, vars: ["J-20 Black Ribbon 2001", "J-20A Mighty Dragon WS-10C", "J-20B Thrust Vectoring", "J-20S Twin-Seat Drone Command", "J-35 Carrier Stealth Fighter"] },
+  { fam: "Lockheed SR-71 Blackbird", car: 16, agi: 6, tox: 20, hp: 215, sta: 145, tier: 6, vars: ["A-12 Oxcart Mach 3.2", "YF-12A Mach 3 Interceptor", "SR-71A Blackbird Habu", "SR-71B Big Mother Trainer", "M-21 Tagboard D-21 Carrier"] },
+  { fam: "Northrop B-2 Spirit", car: 16, agi: 5, tox: 25, hp: 230, sta: 110, tier: 6, vars: ["ATB Senior Ice Concept", "B-2 Spirit of Missouri", "B-2 Spirit of New York", "B-2 Stealth Radar Upgrade", "B-21 Raider Next-Gen Ghost"] },
+  { fam: "Northrop YF-23 Black Widow II", car: 13, agi: 14, tox: 22, hp: 178, sta: 128, tier: 6, vars: ["YF-23 PAV-1 Spider Black", "YF-23 PAV-2 Gray Ghost", "F-23A Production Blueprint", "NATF-23 Naval Stealth Swing", "FB-23 Deep Penetration Bomber"] },
+  { fam: "North American XB-70 Valkyrie", car: 18, agi: 4, tox: 18, hp: 250, sta: 135, tier: 6, vars: ["XB-70A Valkyrie Ship 1", "XB-70A Droop-Wing Ship 2", "RS-70 Recon Strike Valkyrie", "XB-70 Mach 3 Titanium God", "B-70 Deep Strategic Penetrator"] },
+  { fam: "Grumman X-29 FSW", car: 10, agi: 16, tox: 18, hp: 160, sta: 130, tier: 6, vars: ["X-29 Ship 1 Forward Swept", "X-29 Ship 2 Spin Test", "F-29 Combat Derivative", "X-29 Vortex Flow Control", "X-29 Aeroelastic Tail"] },
+  { fam: "Sukhoi Su-47 Berkut", car: 12, agi: 16, tox: 19, hp: 175, sta: 128, tier: 6, vars: ["S-32 Forward Swept Wing", "S-37 Berkut Golden Eagle", "Su-47 Berkut Composite Wing", "Su-47 Weapons Bay Proof", "Su-47 Vectoring Exhaust"] },
+  { fam: "Mikoyan Project 1.44 MFI", car: 14, agi: 13, tox: 20, hp: 195, sta: 120, tier: 6, vars: ["MiG-1.42 Multi-Role Blueprint", "MiG-1.44 Canard Delta Heavy", "MiG-1.44 Supercruise Engine", "MiG-1.44 Plasma Stealth Proof", "MiG-41 PAK DP Interceptor"] },
+  { fam: "Sukhoi Su-75 Checkmate", car: 12, agi: 13, tox: 22, hp: 168, sta: 120, tier: 6, vars: ["Su-75 Checkmate Light Stealth", "Su-75 Unmanned Loyal Wingman", "Su-75 Two-Seat Variant", "Su-75 Carrier Light Stealth", "Su-75 Supercruise Checkmate"] },
+  { fam: "Lockheed Martin Darkstar", car: 17, agi: 7, tox: 25, hp: 240, sta: 150, tier: 6, vars: ["Tier III Minus DarkStar", "SR-72 Son of Blackbird", "Darkstar Mach 10 Scramjet", "Darkstar Aurora Black Project", "TR-3B Black Triangle Echo"] },
+  { fam: "NGAD 6th-Gen Air Dominance", car: 16, agi: 15, tox: 28, hp: 225, sta: 140, tier: 6, vars: ["NGAD Technology Demonstrator", "NGAD F-X Penetrating Counter", "F/A-XX Navy 6th-Gen Fighter", "B-21 Raider Dominance Lead", "Loyal Wingman Drone Master"] }
+];
+
+// Procedurally expand into precisely 500 unique aircraft
+const SPECIES_DB = [];
+BASE_LINEAGES.forEach(lineage => {
+  lineage.vars.forEach((varName, idx) => {
+    const scaleFactor = 1 + (idx * 0.05);
+    SPECIES_DB.push({
+      name: varName,
+      car: Math.round(lineage.car * scaleFactor),
+      agi: Math.round(lineage.agi * scaleFactor),
+      tox: lineage.tox > 0 ? Math.round(lineage.tox * scaleFactor) : 0,
+      hp: Math.round(lineage.hp * scaleFactor),
+      sta: Math.round(lineage.sta * scaleFactor),
+      tier: lineage.tier
+    });
+  });
+});
+
+const LIVERY_TIERS = [
+  { name: "Standard Air Superiority Grey", mult: 1.0, color: "var(--text)" },
+  { name: "Flanker Splinter Camo", mult: 1.5, color: "var(--cyan)" },
+  { name: "Aggressor Arctic Splinter", mult: 2.0, color: "#94a3b8" },
+  { name: "Desert Tiger Stripe", mult: 2.8, color: "var(--amber)" },
+  { name: "High-Vis Navy Livery", mult: 4.0, color: "var(--gold)" },
+  { name: "Ghost Stealth RAM Coating", mult: 6.5, color: "var(--purple)" }
+];
+
+const BIDDER_NAMES = [
+  "Lockheed_SkunkWorks", "Sukhoi_OKB", "TopGun_AggressorSquad", "BAE_Warton",
+  "Dassault_Aviation", "Boeing_PhantomWorks", "Saab_Linkoping", "Northrop_Grumman_B2",
+  "Mikoyan_Engineering", "DARPA_Tactical_Office"
+];
+
+let state = {
+  pith: 15, // Kerosene Fuel Reserve
+  jars: 5,  // Tow Cables
+  proJars: 0, // Recovery Flatbeds
+  lures: 0,  // Radar Beacons
+  godMode: false,
+  inCombat: false,
+  combatMode: 'wild',
+  active: null,
+  wild: null,
+  arenaOpponent: null,
+  arenaDivision: 1,
+  roster: [],
+  discovered: {},
+  sortMode: 'value',
+  auctions: []
+};
+
+function uid() {
+  return 'u_' + Math.random().toString(36).substr(2, 9);
+}
+
+// --- SAVE / LOAD LOGIC ---
+function saveGame(silent = false) {
+  const saveObj = {
+    pith: state.pith,
+    jars: state.jars,
+    proJars: state.proJars,
+    lures: state.lures,
+    godMode: state.godMode,
+    activeId: state.active ? state.active.id : null,
+    roster: state.roster,
+    discovered: state.discovered,
+    sortMode: state.sortMode
+  };
+  try {
+    localStorage.setItem('skystrike_save', JSON.stringify(saveObj));
+    if (!silent) writeLog("TELEMETRY SAVED: Flight line and hangar database synced to storage.", "success");
+  } catch(e) {
+    console.error("Save failed", e);
+  }
+}
+
+function loadGame() {
+  try {
+    const data = localStorage.getItem('skystrike_save');
+    if (!data) return false;
+    const parsed = JSON.parse(data);
+    state.pith = parsed.pith ?? 15;
+    state.jars = parsed.jars ?? 5;
+    state.proJars = parsed.proJars ?? 0;
+    state.lures = parsed.lures ?? 0;
+    state.godMode = parsed.godMode ?? false;
+    state.sortMode = parsed.sortMode ?? 'value';
+    state.discovered = parsed.discovered ?? {};
+    state.roster = parsed.roster ?? [];
+
+    if (state.roster.length > 0) {
+      const foundActive = state.roster.find(u => u.id === parsed.activeId);
+      state.active = foundActive || state.roster[0];
+    }
+
+    if (state.godMode) {
+      const btn = document.getElementById("god-mode-btn");
+      if (btn) {
+        btn.textContent = "GOD MODE: ON";
+        btn.classList.add("active");
+      }
+    }
+    return true;
+  } catch(e) {
+    console.error("Load failed", e);
+    return false;
+  }
+}
+
+function wipeSave() {
+  if (confirm("Scrap entire flight line and reset all telemetry to factory baseline?")) {
+    localStorage.removeItem('skystrike_save');
+    location.reload();
+  }
+}
+
+function getSpecimenValue(unit) {
+  const tierBase = [0, 8, 20, 50, 120, 300, 850][unit.tier || 1];
+  const statSum = (unit.maxHp * 0.25) + (unit.maxSta * 0.15) + (unit.car * 2.5) + (unit.tox * 3.5) + (unit.agi * 2.0);
+  const buffMult = 1 + ((unit.buff || 0) / 100);
+  const morphObj = LIVERY_TIERS.find(m => m.name === unit.morph) || { mult: 1.0 };
+  const instarMult = 1 + ((unit.instar - 1) * 0.25);
+  const champMult = unit.isChampion ? 1.5 : 1.0;
+  return Math.max(5, Math.round((tierBase + statSum) * buffMult * morphObj.mult * instarMult * champMult));
+}
+
+function getSpecimenTotalStats(unit) {
+  return unit.maxHp + unit.maxSta + unit.car + unit.tox + unit.agi;
+}
+
+function makeBar(cur, max) {
+  const size = 10;
+  const pct = Math.max(0, Math.min(1, cur / max));
+  const filled = Math.round(pct * size);
+  return `[${"█".repeat(filled)}${"░".repeat(size - filled)}]`;
+}
+
+function writeLog(msg, type = "normal") {
+  const el = document.getElementById("log");
+  const row = document.createElement("div");
+  row.className = `log-entry ${type ? 'log-' + type : ''}`;
+  row.textContent = `> ${msg}`;
+  el.appendChild(row);
+  el.scrollTop = el.scrollHeight;
+}
+
+function createUnit(template) {
+  return {
+    id: uid(),
+    ...template,
+    maxHp: template.hp,
+    curHp: template.hp,
+    maxSta: template.sta,
+    curSta: template.sta,
+    instar: 1, // Block I
+    morph: "Standard Air Superiority Grey",
+    venomTicks: 0,
+    fortified: 0
+  };
+}
+
+function toggleGodMode() {
+  state.godMode = !state.godMode;
+  const btn = document.getElementById("god-mode-btn");
+  if (state.godMode) {
+    btn.textContent = "GOD MODE: ON";
+    btn.classList.add("active");
+    state.pith = 999999;
+    state.jars = 999;
+    state.proJars = 999;
+    state.lures = 999;
+    if (state.active) {
+      state.active.maxHp = 9999;
+      state.active.curHp = 9999;
+      state.active.maxSta = 9999;
+      state.active.curSta = 9999;
+      state.active.car = 999;
+      state.active.tox = 999;
+      state.active.agi = 999;
+    }
+    writeLog("GOD MODE ENGAGED: Infinite Kerosene, 100% Tow Traps, and Invulnerable Armor!", "gold");
+  } else {
+    btn.textContent = "GOD MODE: OFF";
+    btn.classList.remove("active");
+    state.pith = 500;
+    writeLog("GOD MODE DISENGAGED: Systems restored to standard tactical parameters.", "alert");
+  }
+  saveGame(true);
+  updateUI();
+}
+
+function populateForgeSelect() {
+  const select = document.getElementById("forge-select");
+  select.innerHTML = '<option value="RANDOM">-- ANY RANDOM REAL AIRCRAFT --</option>';
+
+  for (let t = 1; t <= 6; t++) {
+    const group = document.createElement("optgroup");
+    group.label = `Tier ${t} Airframes (${SPECIES_DB.filter(s => s.tier === t).length} Total)`;
+    const pool = SPECIES_DB.filter(s => s.tier === t);
+    pool.forEach(s => {
+      const opt = document.createElement("option");
+      opt.value = s.name;
+      opt.textContent = `[T${s.tier}] ${s.name}`;
+      group.appendChild(opt);
+    });
+    select.appendChild(group);
+  }
+}
+
+function populateBreedingSelects() {
+  const a = document.getElementById("breed-parent-a");
+  const b = document.getElementById("breed-parent-b");
+  if (!a || !b) return;
+
+  a.innerHTML = '';
+  b.innerHTML = '';
+
+  state.roster.forEach(u => {
+    const optA = document.createElement("option");
+    optA.value = u.id;
+    optA.textContent = `${u.name} (T${u.tier} | Block ${u.instar})`;
+    a.appendChild(optA);
+
+    const optB = document.createElement("option");
+    optB.value = u.id;
+    optB.textContent = `${u.name} (T${u.tier} | Block ${u.instar})`;
+    b.appendChild(optB);
+  });
+  if (state.roster.length > 1) b.selectedIndex = 1;
+}
+
+function setTab(tabName) {
+  if (state.inCombat) {
+    writeLog("ENGAGED IN ACTIVE DOGFIGHT: Clear airspace or withdraw before swapping interfaces.", "crit");
+    return;
+  }
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-tab'));
+  document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+  
+  const targetContent = document.getElementById('tab-' + tabName);
+  const targetNav = document.getElementById('nav-' + tabName);
+  if (targetContent) targetContent.classList.add('active-tab');
+  if (targetNav) targetNav.classList.add('active');
+
+  if (tabName === 'vivarium') {
+    populateBreedingSelects();
+    renderVivarium();
+  }
+  if (tabName === 'corner') renderAuctions();
+  if (tabName === 'guide') renderBestiary();
+  updateUI();
+}
+
+function init() {
+  populateForgeSelect();
+  const loaded = loadGame();
+  if (!loaded || state.roster.length === 0) {
+    const starter = createUnit(SPECIES_DB[0]);
+    starter.name = `[T1] ${starter.name}`;
+    state.active = starter;
+    state.roster = [starter];
+    state.discovered[SPECIES_DB[0].name] = true;
+    writeLog("Terminal initialized. 500 combat aircraft telemetry profiles verified.", "info");
+    writeLog(`Assigned baseline fighter: ${starter.name}.`, "info");
+  } else {
+    writeLog("FLIGHT LOGS LOADED: Telemetry synchronized. Welcome back, Air Wing Commander.", "gold");
+  }
+  setExploreMode();
+  setInterval(processAuctionsTick, 1000);
+  setInterval(() => saveGame(true), 15000);
+  window.addEventListener('beforeunload', () => saveGame(true));
+}
+
+function setExploreMode() {
+  state.inCombat = false;
+  state.wild = null;
+  state.arenaOpponent = null;
+  document.getElementById("enemy-card-wild").classList.remove("active-enemy");
+  document.getElementById("arena-menu").style.display = "block";
+  document.getElementById("arena-battle-view").style.display = "none";
+  updateUI();
+
+  document.getElementById("btn-wild-1-label").textContent = "SCRAMBLE PATROL";
+  document.getElementById("btn-wild-1-sub").textContent = state.lures > 0 ? "IFF beacon active! (Tier 3+)" : "Search airspace for bogies";
+  document.getElementById("btn-wild-2-label").textContent = "REFUEL & SERVICE";
+  document.getElementById("btn-wild-2-sub").textContent = "Restore Integrity/Burner";
+  document.getElementById("btn-wild-3-label").textContent = "BUY TOW CABLE (5 KEROSENE)";
+  document.getElementById("btn-wild-3-sub").textContent = `Stock: ${state.jars}`;
+  document.getElementById("btn-wild-4-label").textContent = "CYCLE SQUADRON LEAD";
+  document.getElementById("btn-wild-4-sub").textContent = `Fleet size: ${state.roster.length}`;
+}
+
+function setCombatMode(mode = 'wild') {
+  state.inCombat = true;
+  state.combatMode = mode;
+
+  if (mode === 'wild') {
+    document.getElementById("enemy-card-wild").classList.add("active-enemy");
+    document.getElementById("btn-wild-1-label").textContent = "20MM VULCAN BURST";
+    document.getElementById("btn-wild-1-sub").textContent = "Kinetic gun pass (+5 Burner)";
+    document.getElementById("btn-wild-2-label").textContent = "RADAR JAMMING";
+    document.getElementById("btn-wild-2-sub").textContent = "Cost: 15 Burner | Electronic DoT";
+    document.getElementById("btn-wild-3-label").textContent = "DEPLOY FLARES";
+    document.getElementById("btn-wild-3-sub").textContent = "Cost: 10 Burner | +Armor buff";
+    document.getElementById("btn-wild-4-label").textContent = "DEPLOY TOW CABLE";
+    document.getElementById("btn-wild-4-sub").textContent = state.godMode ? "God Trap: 100% Rate" : (state.proJars > 0 ? "Using Flatbed (+30%)" : `Cost: 1 Cable (${state.jars} left)`);
+  } else {
+    document.getElementById("arena-menu").style.display = "none";
+    document.getElementById("arena-battle-view").style.display = "block";
+  }
+  updateUI();
+}
+
+function updateUI() {
+  document.getElementById("player-status").textContent = `KEROSENE: ${state.godMode ? 'INF' : state.pith} | CABLES: ${state.jars} | BEACONS: ${state.lures}`;
+
+  const a = state.active;
+  if (a) {
+    document.getElementById("player-name-wild").textContent = a.name;
+    document.getElementById("player-hp-meter-wild").textContent = makeBar(a.curHp, a.maxHp);
+    document.getElementById("player-hp-num-wild").textContent = `${a.curHp}/${a.maxHp}`;
+    document.getElementById("player-sta-meter-wild").textContent = makeBar(a.curSta, a.maxSta);
+    document.getElementById("player-sta-num-wild").textContent = `${a.curSta}/${a.maxSta}`;
+    document.getElementById("player-scl-wild").textContent = a.car + a.fortified;
+    document.getElementById("player-tox-wild").textContent = a.tox;
+    document.getElementById("player-agi-wild").textContent = a.agi;
+
+    document.getElementById("player-name-arena").textContent = a.name;
+    document.getElementById("player-hp-meter-arena").textContent = makeBar(a.curHp, a.maxHp);
+    document.getElementById("player-hp-num-arena").textContent = `${a.curHp}/${a.maxHp}`;
+    document.getElementById("player-sta-meter-arena").textContent = makeBar(a.curSta, a.maxSta);
+    document.getElementById("player-sta-num-arena").textContent = `${a.curSta}/${a.maxSta}`;
+    document.getElementById("player-scl-arena").textContent = a.car + a.fortified;
+    document.getElementById("player-tox-arena").textContent = a.tox;
+    document.getElementById("player-agi-arena").textContent = a.agi;
+  }
+
+  const w = state.wild;
+  if (w && state.inCombat && state.combatMode === 'wild') {
+    document.getElementById("enemy-name-wild").textContent = `[T${w.tier}] BOGEY: ${w.name}`;
+    document.getElementById("enemy-hp-meter-wild").textContent = makeBar(w.curHp, w.maxHp);
+    document.getElementById("enemy-hp-num-wild").textContent = `${w.curHp}/${w.maxHp}`;
+    document.getElementById("enemy-sta-meter-wild").textContent = makeBar(w.curSta, w.maxSta);
+    document.getElementById("enemy-sta-num-wild").textContent = `${w.curSta}/${w.maxSta}`;
+    document.getElementById("enemy-scl-wild").textContent = w.car + w.fortified;
+    document.getElementById("enemy-tox-wild").textContent = w.tox;
+    document.getElementById("enemy-agi-wild").textContent = w.agi;
+  } else {
+    document.getElementById("enemy-name-wild").textContent = "RADAR CLEAR";
+    document.getElementById("enemy-hp-meter-wild").textContent = "[----------]";
+    document.getElementById("enemy-hp-num-wild").textContent = "0/0";
+    document.getElementById("enemy-sta-meter-wild").textContent = "[----------]";
+    document.getElementById("enemy-sta-num-wild").textContent = "0/0";
+    document.getElementById("enemy-scl-wild").textContent = "0";
+    document.getElementById("enemy-tox-wild").textContent = "0";
+    document.getElementById("enemy-agi-wild").textContent = "0";
+  }
+
+  const opp = state.arenaOpponent;
+  if (opp && state.inCombat && state.combatMode === 'arena') {
+    document.getElementById("enemy-name-arena").textContent = opp.name;
+    document.getElementById("enemy-hp-meter-arena").textContent = makeBar(opp.curHp, opp.maxHp);
+    document.getElementById("enemy-hp-num-arena").textContent = `${opp.curHp}/${opp.maxHp}`;
+    document.getElementById("enemy-sta-meter-arena").textContent = makeBar(opp.curSta, opp.maxSta);
+    document.getElementById("enemy-sta-num-arena").textContent = `${opp.curSta}/${opp.maxSta}`;
+    document.getElementById("enemy-scl-arena").textContent = opp.car + opp.fortified;
+    document.getElementById("enemy-tox-arena").textContent = opp.tox;
+    document.getElementById("enemy-agi-arena").textContent = opp.agi;
+  }
+}
+
+function handleWildBtn(num) {
+  if (!state.inCombat) {
+    if (num === 1) startForage();
+    else if (num === 2) restActiveUnit();
+    else if (num === 3) buyItem('jar', 5);
+    else if (num === 4) cycleFighter();
+  } else {
+    handleCombatAction(num);
+  }
+}
+
+function restActiveUnit() {
+  if (state.active.curHp === state.active.maxHp && state.active.curSta === state.active.maxSta) {
+    writeLog("Active aircraft is already fully refueled and serviced.");
+    return;
+  }
+  state.active.curHp = state.active.maxHp;
+  state.active.curSta = state.active.maxSta;
+  state.active.venomTicks = 0;
+  state.active.fortified = 0;
+  writeLog(`${state.active.name} hot-pitted and refueled. Systems nominal.`, "success");
+  saveGame(true);
+  updateUI();
+}
+
+function cycleFighter() {
+  if (state.roster.length <= 1) {
+    writeLog("Only 1 aircraft on the flight line. Recover more from patrols.", "info");
+    return;
+  }
+  const curIdx = state.roster.findIndex(r => r.id === state.active.id);
+  const nextIdx = (curIdx + 1) % state.roster.length;
+  state.active = state.roster[nextIdx];
+  state.active.fortified = 0;
+  state.active.venomTicks = 0;
+  writeLog(`Flight lead switched to: ${state.active.name}.`, "info");
+  saveGame(true);
+  updateUI();
+}
+
+function rollTier() {
+  if (state.lures > 0) {
+    state.lures--;
+    writeLog("IFF Radar Beacon triggered! High-performance bogey locked.", "alert");
+    const roll = Math.random() * 100;
+    if (roll < 4) return 6;
+    if (roll < 20) return 5;
+    if (roll < 55) return 4;
+    return 3;
+  }
+  const roll = Math.random() * 100;
+  if (roll < 0.6) return 6;
+  if (roll < 3.5) return 5;
+  if (roll < 12.0) return 4;
+  if (roll < 28.0) return 3;
+  if (roll < 60.0) return 2;
+  return 1;
+}
+
+function startForage() {
+  if (state.active.curHp <= 0) {
+    writeLog("Lead aircraft is damaged! Service on flight line first.", "crit");
+    return;
+  }
+
+  const targetTier = rollTier();
+  const pool = SPECIES_DB.filter(s => s.tier === targetTier);
+  const tmpl = pool[Math.floor(Math.random() * pool.length)];
+  
+  state.wild = createUnit(tmpl);
+  state.discovered[tmpl.name] = true;
+
+  const prefix = `[T${tmpl.tier}]`;
+  writeLog(`--- BOGEY MERGED IN VISUAL RANGE ---`, "info");
+  if (tmpl.tier >= 6) writeLog(`5TH-GEN BLACK PROJECT DETECTED: ${prefix} ${tmpl.name} has entered the sector!`, "legendary");
+  else if (tmpl.tier >= 5) writeLog(`SUPER-MANEUVERABLE TITAN: ${prefix} ${tmpl.name} locked on radar!`, "crit");
+  else if (tmpl.tier >= 3) writeLog(`WARNING: High-speed interceptor ${prefix} ${tmpl.name} intercepted.`, "alert");
+  else writeLog(`Identified ${prefix} ${tmpl.name} cruising over sector.`, "normal");
+
+  setCombatMode('wild');
+}
+
+function calculateDamage(attacker, defender, basePower) {
+  if (state.godMode && attacker === state.active) return 9999;
+  const rawDmg = basePower + Math.floor(attacker.agi * 0.35);
+  const effectiveCar = defender.car + defender.fortified;
+  const mitigation = 100 / (100 + (effectiveCar * 6));
+  return Math.max(1, Math.round(rawDmg * mitigation));
+}
+
+function checkDodge(attacker, defender) {
+  if (state.godMode && defender === state.active) return true;
+  if (state.godMode && attacker === state.active) return false;
+  const agiDiff = defender.agi - attacker.agi;
+  const dodgeChance = Math.max(0.03, Math.min(0.40, 0.05 + (agiDiff * 0.02)));
+  return Math.random() < dodgeChance;
+}
+
+function handleCombatAction(num) {
+  const p = state.active;
+  const w = state.wild;
+
+  if (num === 1) {
+    if (checkDodge(p, w)) {
+      writeLog(`Bogey ${w.name} broke hard and evaded your gun pass!`, "alert");
+    } else {
+      let dmg = calculateDamage(p, w, 7 + Math.floor(Math.random() * 4));
+      w.curHp = Math.max(0, w.curHp - dmg);
+      p.curSta = Math.min(p.maxSta, p.curSta + 5);
+      writeLog(`${p.name} scores 20mm kinetic hits for ${dmg} structural damage.`);
+    }
+  } 
+  else if (num === 2) {
+    if (p.curSta < 15 && !state.godMode) { writeLog("Burner reserve depleted!", "crit"); return; }
+    if (p.tox === 0 && !state.godMode) { writeLog(`${p.name} lacks EW Jamming pods!`, "crit"); return; }
+    p.curSta = Math.max(0, p.curSta - 15);
+    let baseDmg = calculateDamage(p, w, 4 + p.tox);
+    w.curHp = Math.max(0, w.curHp - baseDmg);
+    w.venomTicks += 2;
+    writeLog(`${p.name} activates EW jamming! Inflicted ${baseDmg} avionics burn & continuous radar interference.`, "alert");
+  } 
+  else if (num === 3) {
+    if (p.curSta < 10 && !state.godMode) { writeLog("Burner reserve depleted!", "crit"); return; }
+    p.curSta = Math.max(0, p.curSta - 10);
+    const fortGain = Math.max(3, Math.round(p.car * 0.3));
+    p.fortified += fortGain;
+    writeLog(`${p.name} dispenses chaff/flares (+${fortGain} Armor/Evasion this dogfight).`, "info");
+  } 
+  else if (num === 4) {
+    let isPro = state.proJars > 0;
+    if (!state.godMode && !isPro && state.jars <= 0) {
+      writeLog("No tow cable rigs in reserve!", "crit");
+      return;
+    }
+    
+    if (!state.godMode) {
+      if (isPro) state.proJars--;
+      else state.jars--;
+    }
+
+    let hpRatio = w.curHp / w.maxHp;
+    let escapeRisk = state.godMode ? -1 : (hpRatio * 0.50) + (w.tier * 0.08) - (isPro ? 0.30 : 0.0);
+
+    if (Math.random() > escapeRisk) {
+      writeLog(`SUCCESS! Captured and recovered [T${w.tier}] ${w.name}!`, "success");
+      w.name = `[T${w.tier}] ${w.name}`;
+      w.curHp = w.maxHp;
+      w.fortified = 0;
+      w.venomTicks = 0;
+      state.roster.push(w);
+
+      const bounty = Math.round(6 * Math.pow(2.1, w.tier - 1));
+      if (!state.godMode) state.pith += bounty;
+      writeLog(`Awarded ${bounty} Kerosene salvage bounty.`, "success");
+      saveGame(true);
+      setExploreMode();
+      return;
+    } else {
+      writeLog(`FAILED! [T${w.tier}] ${w.name} punched afterburners and slipped the cable!`, "crit");
+    }
+  }
+
+  if (w.curHp <= 0) {
+    const bounty = Math.round(6 * Math.pow(2.1, w.tier - 1));
+    if (!state.godMode) state.pith += bounty;
+    writeLog(`Bogey [T${w.tier}] ${w.name} disabled! Salvaged ${bounty} Kerosene.`, "success");
+    saveGame(true);
+    setExploreMode();
+    return;
+  }
+
+  enemyWildTurn();
+  updateUI();
+}
+
+function enemyWildTurn() {
+  const p = state.active;
+  const w = state.wild;
+
+  if (w.venomTicks > 0) {
+    const dot = Math.max(2, Math.round(w.tox * 0.75 + 2));
+    w.curHp = Math.max(0, w.curHp - dot);
+    w.venomTicks--;
+    writeLog(`Electronic jamming burns bogey ${w.name} for ${dot} damage.`, "alert");
+    if (w.curHp <= 0) {
+      const bounty = Math.round(6 * Math.pow(2.1, w.tier - 1));
+      if (!state.godMode) state.pith += bounty;
+      writeLog(`Bogey [T${w.tier}] ${w.name} crashed from avionics failure! Salvaged ${bounty} Kerosene.`, "success");
+      saveGame(true);
+      setExploreMode();
+      return;
+    }
+  }
+
+  if (checkDodge(w, p)) {
+    writeLog(`${p.name} pulled high-G defense and evaded the attack!`, "success");
+    return;
+  }
+
+  if (state.godMode) {
+    writeLog(`Bogey fired, but God Mode deflected all damage!`, "info");
+    return;
+  }
+
+  if (w.tox > 0 && Math.random() < 0.45 && w.curSta >= 15) {
+    w.curSta -= 15;
+    let dmg = calculateDamage(w, p, 3 + w.tox);
+    p.curHp = Math.max(0, p.curHp - dmg);
+    writeLog(`Bogey ${w.name} jams your radar and strikes for ${dmg} dmg!`, "crit");
+  } else {
+    let dmg = calculateDamage(w, p, 6 + Math.floor(Math.random() * 3));
+    p.curHp = Math.max(0, p.curHp - dmg);
+    w.curSta = Math.min(w.maxSta, w.curSta + 5);
+    writeLog(`Bogey ${w.name} fires cannons for ${dmg} dmg.`);
+  }
+
+  if (p.curHp <= 0) {
+    writeLog(`${p.name} sustained critical battle damage! Disengaged to home base.`, "crit");
+    p.curHp = 0;
+    saveGame(true);
+    setExploreMode();
+  }
+}
+
+// --- RED FLAG DOGFIGHT CIRCUITS ---
+function enterArena(division) {
+  if (state.active.curHp <= 0) {
+    writeLog("Lead aircraft is disabled! Repair on flight line first.", "crit");
+    return;
+  }
+
+  const fee = division === 1 ? 20 : (division === 2 ? 60 : 180);
+  if (!state.godMode && state.pith < fee) {
+    writeLog(`Insufficient Kerosene! Red Flag fuel fee requires ${fee} Kerosene.`, "crit");
+    return;
+  }
+
+  if (!state.godMode) state.pith -= fee;
+  state.arenaDivision = division;
+
+  let minTier = division === 1 ? 1 : (division === 2 ? 3 : 5);
+  let maxTier = division === 1 ? 2 : (division === 2 ? 4 : 6);
+  const pool = SPECIES_DB.filter(s => s.tier >= minTier && s.tier <= maxTier);
+  const template = pool[Math.floor(Math.random() * pool.length)];
+
+  const scale = 1.2 + (division * 0.15);
+  const arenaOpponent = {
+    ...template,
+    hp: Math.round(template.hp * scale),
+    sta: Math.round(template.sta * scale),
+    car: Math.round(template.car * scale),
+    tox: template.tox > 0 ? Math.round(template.tox * scale) : 0,
+    agi: Math.round(template.agi * scale),
+  };
+
+  const oppUnit = createUnit(arenaOpponent);
+  oppUnit.name = `[AGGRESSOR] [T${template.tier}] ${template.name}`;
+  state.arenaOpponent = oppUnit;
+  state.discovered[template.name] = true;
+
+  writeLog(`--- ENTERED RED FLAG DIVISION ${division} ---`, "gold");
+  writeLog(`OPPONENT: ${oppUnit.name} scrambles into the engagement zone!`, "crit");
+
+  setCombatMode('arena');
+}
+
+function handleArenaCombat(action) {
+  const p = state.active;
+  const opp = state.arenaOpponent;
+
+  if (action === 1) {
+    if (checkDodge(p, opp)) {
+      writeLog(`Aggressor ${opp.name} rolled into your blind spot!`, "alert");
+    } else {
+      let dmg = calculateDamage(p, opp, 8 + Math.floor(Math.random() * 4));
+      opp.curHp = Math.max(0, opp.curHp - dmg);
+      p.curSta = Math.min(p.maxSta, p.curSta + 5);
+      writeLog(`${p.name} scores 20mm hits on aggressor for ${dmg} damage.`);
+    }
+  }
+  else if (action === 2) {
+    if (p.curSta < 15 && !state.godMode) { writeLog("Burner reserve depleted!", "crit"); return; }
+    if (p.tox === 0 && !state.godMode) { writeLog(`${p.name} lacks EW jamming pods!`, "crit"); return; }
+    p.curSta = Math.max(0, p.curSta - 15);
+    let baseDmg = calculateDamage(p, opp, 5 + p.tox);
+    opp.curHp = Math.max(0, opp.curHp - baseDmg);
+    opp.venomTicks += 2;
+    writeLog(`${p.name} floods aggressor radar with noise! Inflicted ${baseDmg} dmg and continuous interference.`, "alert");
+  }
+  else if (action === 3) {
+    if (p.curSta < 10 && !state.godMode) { writeLog("Burner reserve depleted!", "crit"); return; }
+    p.curSta = Math.max(0, p.curSta - 10);
+    const gain = Math.max(4, Math.round(p.car * 0.35));
+    p.fortified += gain;
+    writeLog(`${p.name} dispenses infrared decoys (+${gain} Defense/Armor).`, "info");
+  }
+  else if (action === 4) {
+    if (p.curSta < 25 && !state.godMode) { writeLog("Requires 25 Burner for Afterburner Dive!", "crit"); return; }
+    p.curSta = Math.max(0, p.curSta - 25);
+    if (checkDodge(p, opp)) {
+      writeLog(`Aggressor out-turned your Afterburner Dive!`, "crit");
+    } else {
+      let dmg = Math.round(calculateDamage(p, opp, 16 + Math.floor(Math.random() * 6)) * 1.8);
+      opp.curHp = Math.max(0, opp.curHp - dmg);
+      writeLog(`CRITICAL HIGH-G DIVE! ${p.name} tears through aggressor for ${dmg} massive damage!`, "gold");
+    }
+  }
+
+  if (opp.curHp <= 0) {
+    const purse = state.arenaDivision === 1 ? 80 : (state.arenaDivision === 2 ? 240 : 750);
+    if (!state.godMode) state.pith += purse;
+
+    const minBoost = state.arenaDivision === 1 ? 50 : (state.arenaDivision === 2 ? 100 : 200);
+    const maxBoost = state.arenaDivision === 1 ? 150 : (state.arenaDivision === 2 ? 300 : 500);
+    const buffPct = Math.floor(Math.random() * (maxBoost - minBoost + 1)) + minBoost;
+    const buffMult = 1 + (buffPct / 100);
+
+    const trophyTmpl = SPECIES_DB[Math.floor(Math.random() * SPECIES_DB.length)];
+    const trophyPlane = {
+      ...trophyTmpl,
+      hp: Math.round(trophyTmpl.hp * buffMult),
+      sta: Math.round(trophyTmpl.sta * buffMult),
+      car: Math.round(trophyTmpl.car * buffMult),
+      tox: trophyTmpl.tox > 0 ? Math.round(trophyTmpl.tox * buffMult) : 0,
+      agi: Math.round(trophyTmpl.agi * buffMult),
+      isChampion: true,
+      buff: buffPct
+    };
+
+    const trophyUnit = createUnit(trophyPlane);
+    trophyUnit.name = `[CHAMPION +${buffPct}%] [T${trophyTmpl.tier}] ${trophyTmpl.name}`;
+    state.roster.push(trophyUnit);
+    state.discovered[trophyTmpl.name] = true;
+
+    writeLog(`VICTORY IN RED FLAG! Cleared division and claimed ${purse} Kerosene!`, "gold");
+    writeLog(`TROPHY AWARD: Conferred Aggressor Airframe: ${trophyUnit.name}!`, "legendary");
+    writeLog(`AIRFRAME STATS: HP:${trophyUnit.hp} BURNER:${trophyUnit.sta} ARM:${trophyUnit.car} EW:${trophyUnit.tox} G-LIM:${trophyUnit.agi}`, "info");
+
+    saveGame(true);
+    setExploreMode();
+    return;
+  }
+
+  enemyArenaTurn();
+  updateUI();
+}
+
+function enemyArenaTurn() {
+  const p = state.active;
+  const opp = state.arenaOpponent;
+
+  if (opp.venomTicks > 0) {
+    const dot = Math.max(3, Math.round(opp.tox * 0.8 + 2));
+    opp.curHp = Math.max(0, opp.curHp - dot);
+    opp.venomTicks--;
+    writeLog(`Electronic jamming blinds aggressor for ${dot} dmg.`, "alert");
+    if (opp.curHp <= 0) {
+      handleArenaCombat(1);
+      return;
+    }
+  }
+
+  if (checkDodge(opp, p)) {
+    writeLog(`You evaded the aggressor's high-angle gun pass!`, "success");
+    return;
+  }
+
+  if (state.godMode) {
+    writeLog(`Aggressor fired, but God Mode absorbed the blow!`, "info");
+    return;
+  }
+
+  if (opp.tox > 0 && Math.random() < 0.45 && opp.curSta >= 15) {
+    opp.curSta -= 15;
+    let dmg = calculateDamage(opp, p, 5 + opp.tox);
+    p.curHp = Math.max(0, p.curHp - dmg);
+    writeLog(`Aggressor ${opp.name} executes electronic attack for ${dmg} dmg!`, "crit");
+  } else {
+    let dmg = calculateDamage(opp, p, 8 + Math.floor(Math.random() * 4));
+    p.curHp = Math.max(0, p.curHp - dmg);
+    opp.curSta = Math.min(opp.maxSta, opp.curSta + 5);
+    writeLog(`Aggressor ${opp.name} strafes for ${dmg} dmg.`);
+  }
+
+  if (p.curHp <= 0) {
+    writeLog(`SHOT DOWN IN RED FLAG! ${p.name} sustained fatal damage.`, "crit");
+    p.curHp = 0;
+    saveGame(true);
+    setExploreMode();
+  }
+}
+
+// --- BLOCK OVERHAUL (MOLT/UPGRADE) ---
+function shedUnit(id) {
+  const u = state.roster.find(r => r.id === id);
+  if (!u) return;
+
+  if (u.instar >= 5) {
+    writeLog(`${u.name} is already at Block V (Apex Avionics)! Cannot overhaul further.`, "info");
+    return;
+  }
+
+  const cost = u.tier * 6 * u.instar;
+  if (!state.godMode && state.pith < cost) {
+    writeLog(`Insufficient Kerosene for hangar retrofit! Requires ${cost} Kerosene.`, "crit");
+    return;
+  }
+
+  if (!state.godMode) state.pith -= cost;
+
+  const successCheck = state.godMode ? 1.0 : 0.85;
+  if (Math.random() < successCheck) {
+    u.instar++;
+    u.maxHp = Math.round(u.maxHp * 1.20);
+    u.curHp = u.maxHp;
+    u.maxSta = Math.round(u.maxSta * 1.20);
+    u.curSta = u.maxSta;
+    u.car = Math.round(u.car * 1.20);
+    if (u.tox > 0) u.tox = Math.round(u.tox * 1.20);
+    u.agi = Math.round(u.agi * 1.20);
+
+    writeLog(`OVERHAUL COMPLETE: ${u.name} retrofitted to Block ${u.instar}! (+20% All Flight Stats)`, "success");
+  } else {
+    u.curHp = Math.max(1, u.curHp - 15);
+    writeLog(`AVIONICS GLITCH: ${u.name} suffered retrofit calibration faults! Integrity depleted.`, "crit");
+  }
+
+  saveGame(true);
+  renderVivarium();
+  updateUI();
+}
+
+// --- THE ASSEMBLY LINE (CROSS-ENGINEERING) ---
+function breedSpecimens() {
+  const aId = document.getElementById("breed-parent-a").value;
+  const bId = document.getElementById("breed-parent-b").value;
+
+  if (aId === bId) {
+    writeLog("The Assembly Line requires two distinct airframe donors!", "crit");
+    return;
+  }
+
+  const pA = state.roster.find(r => r.id === aId);
+  const pB = state.roster.find(r => r.id === bId);
+  if (!pA || !pB) return;
+
+  const cost = 15;
+  if (!state.godMode && state.pith < cost) {
+    writeLog(`Insufficient Kerosene for fabrication jig (Requires ${cost} Kerosene).`, "crit");
+    return;
+  }
+
+  if (!state.godMode) state.pith -= cost;
+
+  const chosenParent = Math.random() < 0.5 ? pA : pB;
+  const baseTmpl = SPECIES_DB.find(s => s.name === chosenParent.name.replace(/\[.*?\]\s*/g, '')) || SPECIES_DB[0];
+
+  const rollDelta = () => 0.95 + (Math.random() * 0.20);
+  const offspring = {
+    name: baseTmpl.name,
+    tier: Math.max(pA.tier || 1, pB.tier || 1),
+    hp: Math.round(Math.max(pA.maxHp, pB.maxHp) * rollDelta()),
+    sta: Math.round(Math.max(pA.maxSta, pB.maxSta) * rollDelta()),
+    car: Math.round(Math.max(pA.car, pB.car) * rollDelta()),
+    tox: Math.round(Math.max(pA.tox, pB.tox) * rollDelta()),
+    agi: Math.round(Math.max(pA.agi, pB.agi) * rollDelta())
+  };
+
+  const morphRoll = Math.random() * 100;
+  let morph = LIVERY_TIERS[0].name;
+  if (morphRoll < 2) morph = LIVERY_TIERS[5].name;
+  else if (morphRoll < 6) morph = LIVERY_TIERS[4].name;
+  else if (morphRoll < 12) morph = LIVERY_TIERS[3].name;
+  else if (morphRoll < 20) morph = LIVERY_TIERS[2].name;
+  else if (morphRoll < 30) morph = LIVERY_TIERS[1].name;
+
+  const childUnit = createUnit(offspring);
+  childUnit.morph = morph;
+  childUnit.name = `[${morph.toUpperCase()}] [T${offspring.tier}] ${offspring.name}`;
+
+  state.roster.push(childUnit);
+  state.discovered[baseTmpl.name] = true;
+
+  writeLog(`ASSEMBLY COMPLETE: Factory rolled out a customized ${childUnit.name}!`, "legendary");
+  writeLog(`AIRFRAME STATS: HP:${childUnit.hp} BURNER:${childUnit.sta} ARM:${childUnit.car} EW:${childUnit.tox} G-LIM:${childUnit.agi}`, "info");
+
+  saveGame(true);
+  populateBreedingSelects();
+  renderVivarium();
+  updateUI();
+}
+
+// --- SKUNKWORKS PROTOTYPE INTAKE ---
+function spawnCovetedClutch() {
+  const select = document.getElementById("forge-select");
+  const choice = select.value;
+
+  let template;
+  if (choice === "RANDOM") {
+    template = SPECIES_DB[Math.floor(Math.random() * SPECIES_DB.length)];
+  } else {
+    template = SPECIES_DB.find(s => s.name === choice);
+  }
+
+  if (!template) return;
+
+  const buffPct = Math.floor(Math.random() * 76) + 25;
+  const buffMult = 1 + (buffPct / 100);
+
+  const specimen = {
+    ...template,
+    hp: Math.round(template.hp * buffMult),
+    sta: Math.round(template.sta * buffMult),
+    car: Math.round(template.car * buffMult),
+    tox: template.tox > 0 ? Math.round(template.tox * buffMult) : 0,
+    agi: Math.round(template.agi * buffMult),
+    coveted: true,
+    buff: buffPct
+  };
+
+  const covetedUnit = createUnit(specimen);
+  covetedUnit.name = `[PROTOTYPE +${buffPct}%] [T${template.tier}] ${template.name}`;
+
+  state.roster.push(covetedUnit);
+  state.active = covetedUnit;
+  state.discovered[template.name] = true;
+
+  writeLog(`SKUNKWORKS ROLLOUT: ${covetedUnit.name} delivered to active flight line!`, "legendary");
+  saveGame(true);
+  renderVivarium();
+  updateUI();
+}
+
+// --- THE HANGAR (LIVE 15S AUCTIONS) ---
+function listOnCorner(id) {
+  if (state.auctions.length >= 5) {
+    writeLog("Runway full! Maximum 5 active listings permitted on the auction block.", "crit");
+    return;
+  }
+  const idx = state.roster.findIndex(r => r.id === id);
+  if (idx === -1) return;
+
+  const unit = state.roster[idx];
+  if (unit === state.active && state.roster.length <= 1) {
+    writeLog("Cannot auction your last remaining flight lead!", "crit");
+    return;
+  }
+
+  state.roster.splice(idx, 1);
+  if (unit === state.active) state.active = state.roster[0];
+
+  const baseVal = getSpecimenValue(unit);
+  const startBid = Math.max(1, Math.round(baseVal * 0.5));
+  const maxMultiplier = 0.5 + (Math.random() * 9.5); // Up to 1,000%
+  const targetFinalBid = Math.max(startBid, Math.round(baseVal * maxMultiplier));
+
+  const auction = {
+    id: 'auc_' + Math.random().toString(36).substr(2, 9),
+    unit: unit,
+    baseValue: baseVal,
+    currentBid: startBid,
+    highestBidder: BIDDER_NAMES[Math.floor(Math.random() * BIDDER_NAMES.length)],
+    targetFinalBid: targetFinalBid,
+    timeLeft: 15
+  };
+
+  state.auctions.push(auction);
+  writeLog(`TAXIING TO RUNWAY: ${unit.name} listed with opening bid of ${startBid} Kerosene!`, "gold");
+
+  saveGame(true);
+  renderVivarium();
+  renderAuctions();
+  setTab('corner');
+}
+
+function processAuctionsTick() {
+  if (state.auctions.length === 0) return;
+
+  for (let i = state.auctions.length - 1; i >= 0; i--) {
+    const auc = state.auctions[i];
+    auc.timeLeft--;
+
+    if (auc.timeLeft > 0) {
+      if (Math.random() < 0.75) {
+        const remainingTicks = auc.timeLeft;
+        const bidGap = auc.targetFinalBid - auc.currentBid;
+        const bidIncrement = Math.max(2, Math.round((bidGap / remainingTicks) * (0.6 + Math.random() * 0.8)));
+        auc.currentBid += bidIncrement;
+        auc.highestBidder = BIDDER_NAMES[Math.floor(Math.random() * BIDDER_NAMES.length)];
+      }
+    } else {
+      if (!state.godMode) state.pith += auc.currentBid;
+      const profitPct = Math.round((auc.currentBid / auc.baseValue) * 100);
+      writeLog(`GAVEL DOWN IN THE HANGAR: ${auc.unit.name} SOLD to ${auc.highestBidder} for ${auc.currentBid} Kerosene (${profitPct}% valuation)!`, "gold");
+      state.auctions.splice(i, 1);
+      saveGame(true);
+    }
+  }
+
+  renderAuctions();
+  updateUI();
+}
+
+function cashOutAuction(aucId) {
+  const idx = state.auctions.findIndex(a => a.id === aucId);
+  if (idx === -1) return;
+
+  const auc = state.auctions[idx];
+  if (!state.godMode) state.pith += auc.currentBid;
+  const profitPct = Math.round((auc.currentBid / auc.baseValue) * 100);
+  writeLog(`EARLY CONTRACT SIGNED: ${auc.unit.name} transferred to ${auc.highestBidder} for ${auc.currentBid} Kerosene (${profitPct}%)!`, "success");
+
+  state.auctions.splice(idx, 1);
+  saveGame(true);
+  renderAuctions();
+  updateUI();
+}
+
+function renderAuctions() {
+  const container = document.getElementById("auction-container");
+  const countEl = document.getElementById("auction-slot-count");
+  if (!container) return;
+
+  countEl.textContent = `ACTIVE LISTINGS: ${state.auctions.length} / 5`;
+
+  if (state.auctions.length === 0) {
+    container.innerHTML = `
+      <div id="no-auctions-msg" style="color:var(--text-dim); padding:20px; text-align:center;">
+        No aircraft currently taxiing on the auction runway.<br>Go to the <strong style="color:var(--cyan);">FLIGHT LINE</strong> and click <strong style="color:var(--gold);">AUCTION</strong> on any airframe to launch a bidding run.
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = "";
+  state.auctions.forEach(auc => {
+    const mult = (auc.currentBid / auc.baseValue).toFixed(2);
+    const div = document.createElement("div");
+    div.className = "auction-slot";
+    div.innerHTML = `
+      <div>
+        <strong style="color:var(--gold);">${auc.unit.name}</strong>
+        <div style="font-size:11px; color:var(--text-dim); margin-top:2px;">
+          BASE VALUE: ${auc.baseValue} K | COUNTDOWN: <span style="color:var(--red); font-weight:bold;">${auc.timeLeft}s</span>
+        </div>
+        <div style="font-size:12px; color:#fff; margin-top:4px;">
+          TOP CONTRACT: <span style="color:var(--gold); font-weight:bold; font-size:14px;">${auc.currentBid} K</span> (${mult}x) by <span style="color:var(--cyan);">${auc.highestBidder}</span>
+        </div>
+      </div>
+      <div>
+        <button class="mini-btn" style="background:#2d250f; border-color:var(--gold); color:var(--gold); font-weight:bold; padding:8px 12px;" onclick="cashOutAuction('${auc.id}')">
+          SIGN CONTRACT NOW (${auc.currentBid}K)
+        </button>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+// --- FLIGHT LINE (SQUADRON ROSTER) ---
+function setSortMode(mode) {
+  state.sortMode = mode;
+  document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('sort-' + mode);
+  if (btn) btn.classList.add('active');
+  saveGame(true);
+  renderVivarium();
+}
+
+function renderVivarium() {
+  const list = document.getElementById("vivarium-list");
+  if (!list) return;
+  list.innerHTML = "";
+
+  let sorted = [...state.roster];
+  if (state.sortMode === 'value') {
+    sorted.sort((a, b) => getSpecimenValue(b) - getSpecimenValue(a));
+  } else if (state.sortMode === 'tier') {
+    sorted.sort((a, b) => (b.tier || 1) - (a.tier || 1));
+  } else if (state.sortMode === 'stats') {
+    sorted.sort((a, b) => getSpecimenTotalStats(b) - getSpecimenTotalStats(a));
+  } else if (state.sortMode === 'name') {
+    sorted.sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  sorted.forEach((unit) => {
+    const isAct = unit === state.active;
+    const val = getSpecimenValue(unit);
+    const totStats = getSpecimenTotalStats(unit);
+    const morphObj = LIVERY_TIERS.find(m => m.name === unit.morph) || { color: "var(--text)" };
+    const moltCost = unit.tier * 6 * unit.instar;
+
+    const div = document.createElement("div");
+    div.className = `specimen-list-item ${isAct ? 'selected' : ''}`;
+    div.innerHTML = `
+      <div>
+        <strong style="color:${unit.isChampion ? 'var(--gold)' : morphObj.color};">${unit.name}</strong> 
+        ${isAct ? '<span style="color:var(--cyan);">[LEAD]</span>' : ''}
+        <span style="color:var(--amber); font-size:10px;">[BLOCK ${unit.instar}]</span>
+        <div style="font-size:11px; color:var(--text-dim); margin-top:2px;">
+          VAL: <span style="color:var(--gold); font-weight:bold;">${val} K</span> | STATS: ${totStats} (HP:${unit.curHp}/${unit.maxHp} BURNER:${unit.curSta}/${unit.maxSta} ARM:${unit.car} EW:${unit.tox} G-LIM:${unit.agi})
+        </div>
+      </div>
+      <div class="item-actions">
+        ${!isAct ? `<button class="mini-btn" onclick="makeActive('${unit.id}')">SET LEAD</button>` : ''}
+        ${unit.instar < 5 ? `<button class="mini-btn" style="color:var(--amber);" onclick="shedUnit('${unit.id}')">OVERHAUL (${moltCost}K)</button>` : ''}
+        <button class="mini-btn" onclick="healUnit('${unit.id}')">SERVICE (2K)</button>
+        <button class="mini-btn" style="color:var(--gold); border-color:var(--gold);" onclick="listOnCorner('${unit.id}')">AUCTION</button>
+        ${state.roster.length > 1 ? `<button class="mini-btn" style="color:var(--red);" onclick="sellUnit('${unit.id}')">SCRAP SELL</button>` : ''}
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function makeActive(id) {
+  const u = state.roster.find(r => r.id === id);
+  if (u) {
+    state.active = u;
+    writeLog(`Lead fighter changed to: ${state.active.name}.`, "info");
+    saveGame(true);
+    renderVivarium();
+    updateUI();
+  }
+}
+
+function healUnit(id) {
+  const u = state.roster.find(r => r.id === id);
+  if (!u) return;
+  if (u.curHp === u.maxHp && u.curSta === u.maxSta) {
+    writeLog(`${u.name} already at peak combat readiness.`);
+    return;
+  }
+  if (!state.godMode && state.pith < 2) {
+    writeLog("Insufficient Kerosene (requires 2).", "crit");
+    return;
+  }
+  if (!state.godMode) state.pith -= 2;
+  u.curHp = u.maxHp;
+  u.curSta = u.maxSta;
+  writeLog(`${u.name} serviced and fueled to full capacity.`, "success");
+  saveGame(true);
+  renderVivarium();
+  updateUI();
+}
+
+function sellUnit(id) {
+  if (state.roster.length <= 1) {
+    writeLog("Cannot scrap your last remaining lead aircraft!", "crit");
+    return;
+  }
+  const idx = state.roster.findIndex(r => r.id === id);
+  if (idx !== -1) {
+    const u = state.roster[idx];
+    const val = getSpecimenValue(u);
+    if (!state.godMode) state.pith += val;
+    state.roster.splice(idx, 1);
+    if (u === state.active) state.active = state.roster[0];
+    writeLog(`Scrapped ${u.name} for ${val} Kerosene salvage value.`, "gold");
+    saveGame(true);
+    renderVivarium();
+    updateUI();
+  }
+}
+
+function restAllSpecimens() {
+  if (!state.godMode && state.pith < 15) {
+    writeLog("Requires 15 Kerosene to service entire flight line.", "crit");
+    return;
+  }
+  if (!state.godMode) state.pith -= 15;
+  state.roster.forEach(u => {
+    u.curHp = u.maxHp;
+    u.curSta = u.maxSta;
+  });
+  writeLog("Ground crews overhauled the entire flight line. All airframes refueled and ready.", "success");
+  saveGame(true);
+  renderVivarium();
+  updateUI();
+}
+
+function buyItem(type, cost) {
+  if (!state.godMode && state.pith < cost) {
+    writeLog(`Insufficient Kerosene. Requires ${cost} Kerosene.`, "crit");
+    return;
+  }
+  if (!state.godMode) state.pith -= cost;
+  if (type === 'jar') {
+    state.jars++;
+    writeLog(`Procured 1 Tow Cable Rig.`, "info");
+  } else if (type === 'proJar') {
+    state.proJars++;
+    writeLog(`Procured 1 Heavy Recovery Flatbed (+30% recovery rate).`, "info");
+  } else if (type === 'lure') {
+    state.lures++;
+    writeLog(`Procured 1 IFF Radar Beacon.`, "info");
+  } else if (type === 'bedding') {
+    state.roster.forEach(u => { u.curHp = u.maxHp; u.curSta = u.maxSta; });
+    writeLog(`Full Flight Line Maintenance overhaul applied! All aircraft operational.`, "success");
+  }
+  saveGame(true);
+  updateUI();
+}
+
+function renderBestiary() {
+  const container = document.getElementById("bestiary-list");
+  if (!container) return;
+  container.innerHTML = "";
+  
+  const discoveredCount = Object.keys(state.discovered).length;
+  document.getElementById("bestiary-progress").textContent = `IDENTIFIED: ${discoveredCount} / ${SPECIES_DB.length}`;
+
+  for (let t = 1; t <= 6; t++) {
+    const tierDiv = document.createElement("div");
+    tierDiv.className = "tier-hdr";
+    const tierPool = SPECIES_DB.filter(s => s.tier === t);
+    tierDiv.textContent = `TIER ${t} AIR SUPREMACY (${tierPool.length} TOTAL AIRFRAMES)`;
+    container.appendChild(tierDiv);
+
+    tierPool.forEach(s => {
+      const isKnown = !!state.discovered[s.name];
+      const row = document.createElement("div");
+      row.className = "bestiary-row";
+      if (isKnown) {
+        row.innerHTML = `
+          <span style="color:var(--text); font-weight:bold;">${s.name}</span>
+          <span style="color:var(--text-dim);">INTEG:${s.hp} BURNER:${s.sta} ARM:${s.car} EW:${s.tox} G-LIM:${s.agi}</span>
+        `;
+      } else {
+        row.innerHTML = `
+          <span style="color:var(--text-dim);">??? [UNCLASSIFIED RADAR CONTACT]</span>
+          <span style="color:var(--text-dim);">-- -- --</span>
+        `;
+      }
+      container.appendChild(row);
+    });
+  }
+}
+
+// Ignition
+init();
+</script>
+</body>
+</html>
